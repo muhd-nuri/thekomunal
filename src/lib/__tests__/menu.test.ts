@@ -7,11 +7,16 @@ import {
 } from "@/lib/menu"
 
 describe("menu data", () => {
-  test("slugs are unique across the whole menu", async () => {
-    const slugs = (await getMenu()).flatMap((c) =>
-      c.groups.flatMap((g) => g.items.map((i) => i.slug))
-    )
-    expect(new Set(slugs).size).toBe(slugs.length)
+  test("category and item slugs are unique, since /menu uses both as element IDs", async () => {
+    const menu = await getMenu()
+    const ids = [
+      ...menu.map((c) => c.slug),
+      ...menu.flatMap((c) =>
+        c.groups.flatMap((g) => g.items.map((i) => i.slug))
+      ),
+      "best-sellers",
+    ]
+    expect(new Set(ids).size).toBe(ids.length)
   })
 
   test("every item has at least one positive whole-sen price", async () => {

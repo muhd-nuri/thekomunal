@@ -55,6 +55,9 @@ export default function CommunityPage() {
               <p className="mt-2 font-extrabold text-white/90">
                 {event.tagline}
               </p>
+              {event.venueNote ? (
+                <p className="mt-1 text-sm text-white/75">{event.venueNote}</p>
+              ) : null}
               <p className="mt-4 max-w-[60ch] text-white/90">
                 {event.description}
               </p>

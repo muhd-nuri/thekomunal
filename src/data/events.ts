@@ -15,6 +15,8 @@ export type CommunityEvent = {
   period: string
   /** Venue as it should be shown today; empty when the original venue has closed. */
   venue: string
+  /** Shown on /community when the posters print a venue that no longer operates. */
+  venueNote?: string
   description: string
   tagline: string
   posters: EventPoster[]
@@ -27,6 +29,7 @@ export const events: CommunityEvent[] = [
     period: "Ramadan 2025",
     // Held at the former Bukit Jelutong branch (now closed) — kept as a past community event.
     venue: "",
+    venueNote: "Held at our former Bukit Jelutong branch.",
     tagline: "Muzikal Bertemu Spiritual",
     description:
       "Morehcoustic is a unique evening event series running throughout Ramadan 2025 that combines spiritual practices with acoustic musical performances. The name itself is a creative blend of “Moreh” (the traditional post-Tarawih meal) and “Acoustic,” representing our approach of blending spiritual traditions with contemporary entertainment.",
