@@ -53,7 +53,7 @@ export const outlets: Outlet[] = [
       width: 438,
       height: 329,
     },
-    character: "barista-latte",
+    character: "barista-pourover",
     blob: 1,
   },
 ]
