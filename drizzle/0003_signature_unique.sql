@@ -1,0 +1,2 @@
+DROP INDEX "menu_items_signature_idx";--> statement-breakpoint
+CREATE UNIQUE INDEX "menu_items_signature_unique" ON "menu_items" USING btree ("signature_order") WHERE "menu_items"."signature_order" is not null;

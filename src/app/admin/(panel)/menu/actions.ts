@@ -1,7 +1,7 @@
 "use server"
 // Komunal: menu CMS actions. Every action checks the session, validates input, and
 // refreshes the public homepage and /menu so edits show without a redeploy.
-import { and, asc, eq, isNotNull, max, ne, sql } from "drizzle-orm"
+import { and, asc, eq, inArray, isNotNull, max, ne, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
@@ -489,41 +489,14 @@ export async function saveItem(
     updatedBy: session.user.email,
   }
 
-  const itemId = await db.transaction(async (tx) => {
-    let rowId = current?.id
-    if (!rowId) {
-      const [{ top }] = await tx
-        .select({ top: max(menuItems.sortOrder) })
-        .from(menuItems)
-        .where(eq(menuItems.groupId, groupId))
-      const [created] = await tx
-        .insert(menuItems)
-        .values({ ...values, sortOrder: (top ?? -1) + 1 })
-        .returning({ id: menuItems.id })
-      rowId = created.id
-    } else {
-      const moved = current!.groupId !== groupId
-      let sortOrder = current!.sortOrder
-      if (moved) {
-        const [{ top }] = await tx
-          .select({ top: max(menuItems.sortOrder) })
-          .from(menuItems)
-          .where(eq(menuItems.groupId, groupId))
-        sortOrder = (top ?? -1) + 1
-      }
-      await tx
-        .update(menuItems)
-        .set({ ...values, sortOrder })
-        .where(eq(menuItems.id, rowId))
-      await tx.delete(menuItemPrices).where(eq(menuItemPrices.itemId, rowId))
-    }
-    await tx
-      .insert(menuItemPrices)
-      .values(
-        prices.map((p, sortOrder) => ({ ...p, itemId: rowId!, sortOrder }))
-      )
-    return rowId
-  })
+  let itemId: string
+  try {
+    itemId = await writeItem()
+  } catch (error) {
+    if (isSignatureClash(error))
+      return fail("Someone else just took that homepage slot. Save again.")
+    throw error
+  }
 
   if (current?.image?.src && current.image.src !== image?.src)
     await removeUpload(current.image.src)
@@ -535,6 +508,53 @@ export async function saveItem(
       `/admin/menu/${group.categoryId}?saved=${encodeURIComponent(name)}#item-${itemId}`
     )
   return done(`${name} saved.`)
+
+  /** Writes the dish and replaces its prices in one transaction. */
+  async function writeItem() {
+    return db.transaction(async (tx) => {
+      let rowId = current?.id
+      if (!rowId) {
+        const [{ top }] = await tx
+          .select({ top: max(menuItems.sortOrder) })
+          .from(menuItems)
+          .where(eq(menuItems.groupId, groupId))
+        const [created] = await tx
+          .insert(menuItems)
+          .values({ ...values, sortOrder: (top ?? -1) + 1 })
+          .returning({ id: menuItems.id })
+        rowId = created.id
+      } else {
+        const moved = current!.groupId !== groupId
+        let sortOrder = current!.sortOrder
+        if (moved) {
+          const [{ top }] = await tx
+            .select({ top: max(menuItems.sortOrder) })
+            .from(menuItems)
+            .where(eq(menuItems.groupId, groupId))
+          sortOrder = (top ?? -1) + 1
+        }
+        await tx
+          .update(menuItems)
+          .set({ ...values, sortOrder })
+          .where(eq(menuItems.id, rowId))
+        await tx.delete(menuItemPrices).where(eq(menuItemPrices.itemId, rowId))
+      }
+      await tx
+        .insert(menuItemPrices)
+        .values(
+          prices.map((p, sortOrder) => ({ ...p, itemId: rowId!, sortOrder }))
+        )
+      return rowId
+    })
+  }
+}
+
+function isSignatureClash(error: unknown) {
+  type PgError = { code?: string; constraint_name?: string; cause?: PgError }
+  const e = error as PgError
+  const code = e?.code ?? e?.cause?.code
+  const constraint = e?.constraint_name ?? e?.cause?.constraint_name
+  return code === "23505" && constraint === "menu_items_signature_unique"
 }
 
 export async function setItemAvailable(id: string, isAvailable: boolean) {
@@ -595,14 +615,20 @@ async function compactSignature(order?: string[]) {
         .where(isNotNull(menuItems.signatureOrder))
         .orderBy(asc(menuItems.signatureOrder))
     ).map((r) => r.id)
-  await Promise.all(
-    ids.map((id, i) =>
-      db
+  if (!ids.length) return
+  // Slots are unique, so clear them first; a swap would otherwise clash mid-update.
+  await db.transaction(async (tx) => {
+    await tx
+      .update(menuItems)
+      .set({ signatureOrder: null })
+      .where(inArray(menuItems.id, ids))
+    for (const [i, id] of ids.entries()) {
+      await tx
         .update(menuItems)
         .set({ signatureOrder: i + 1 })
         .where(eq(menuItems.id, id))
-    )
-  )
+    }
+  })
 }
 
 export async function moveSignature(id: string, direction: "up" | "down") {

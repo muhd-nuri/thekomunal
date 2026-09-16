@@ -8,9 +8,32 @@ export type UploadResult =
   | { ok: true; src: string; width: number; height: number }
   | { ok: false; error: string }
 
+// Per staff account, per server process: enough for a poster wall, not for filling the disk.
+const WINDOW_MS = 10 * 60 * 1000
+const MAX_UPLOADS = 60
+const recent = new Map<string, number[]>()
+
+function allowUpload(userId: string) {
+  const now = Date.now()
+  const hits = (recent.get(userId) ?? []).filter((t) => now - t < WINDOW_MS)
+  if (hits.length >= MAX_UPLOADS) {
+    recent.set(userId, hits)
+    return false
+  }
+  hits.push(now)
+  recent.set(userId, hits)
+  return true
+}
+
 export async function uploadImageAction(form: FormData): Promise<UploadResult> {
   try {
-    await assertAdmin()
+    const session = await assertAdmin()
+    if (!allowUpload(session.user.id))
+      return {
+        ok: false,
+        error:
+          "That's a lot of uploads at once. Wait a few minutes and try again.",
+      }
     const file = form.get("file")
     if (!(file instanceof File))
       return { ok: false, error: "Choose a photo to upload." }

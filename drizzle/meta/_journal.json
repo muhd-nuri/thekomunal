@@ -22,6 +22,13 @@
       "when": 1789579953913,
       "tag": "0002_events_upcoming",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789581042784,
+      "tag": "0003_signature_unique",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
-// Komunal: community events — poster artwork is client-supplied; description is verbatim from the current site.
+// Komunal: community events. SEED DATA ONLY since Phase 4: the site reads events from Postgres
+// (edited in /admin/events), and `bun run db:seed` loads this only into an empty events table.
 
 export type EventPoster = {
   src: string

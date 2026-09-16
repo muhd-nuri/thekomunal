@@ -35,6 +35,15 @@ export async function getMenu(): Promise<MenuCategory[]> {
     db.select().from(schema.menuItemPrices),
     db.select().from(schema.menuCategoryAddOns),
   ])
+  // A build against an empty database would prerender a blank menu and homepage.
+  if (
+    categories.length === 0 &&
+    process.env.NEXT_PHASE === "phase-production-build"
+  ) {
+    throw new Error(
+      "The menu tables are empty. Run `bun run db:migrate && bun run db:seed` before building."
+    )
+  }
   return assembleMenu({ categories, groups, items, prices, addOns })
 }
 

@@ -1,8 +1,9 @@
 // Komunal: the Bukit Rimau menu, transcribed from the client's menu PDF (June 2024 file,
 // linked from thekomunal.com). TODO(client): confirm the dishes and prices are still current.
 //
-// Read this through `src/lib/menu.ts`, never directly. Phase 4 moves the menu into Postgres
-// (menu_categories / menu_items / menu_item_prices), and the accessor is the only thing that changes.
+// SEED DATA ONLY. Since Phase 4 the site reads the menu from Postgres (edited in /admin/menu);
+// changing this file does nothing until someone runs `bun run db:seed` on an EMPTY menu.
+// The types below are still the shape the public pages render.
 // Prices are whole sen (RM 1 = 100) so they map straight onto integer columns.
 
 export type MenuImage = {

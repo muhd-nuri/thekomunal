@@ -11,9 +11,11 @@ import {
   pgTable,
   real,
   text,
+  uniqueIndex,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm"
 
 export const reservationStatus = pgEnum("reservation_status", [
   "new",
@@ -246,7 +248,10 @@ export const menuItems = pgTable(
   },
   (t) => [
     index("menu_items_group_idx").on(t.groupId),
-    index("menu_items_signature_idx").on(t.signatureOrder),
+    // One dish per homepage slot; concurrent saves can't both take slot 8.
+    uniqueIndex("menu_items_signature_unique")
+      .on(t.signatureOrder)
+      .where(sql`${t.signatureOrder} is not null`),
   ]
 )
 
