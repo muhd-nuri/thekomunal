@@ -24,6 +24,7 @@ import {
   deriveChannel,
 } from "@/lib/attribution"
 import { generateBookingCode } from "@/lib/booking-code"
+import { clientIpFrom } from "@/lib/client-ip"
 import {
   checkBookingTime,
   formatSlotLong,
@@ -60,11 +61,6 @@ function hashIp(ip: string | null) {
   return createHash("sha256")
     .update(`${ip}${salt ?? ""}`)
     .digest("hex")
-}
-
-function clientIp(h: Headers) {
-  const forwarded = h.get("x-forwarded-for")?.split(",")[0]?.trim()
-  return forwarded || h.get("x-real-ip")?.trim() || null
 }
 
 function pathOf(url: string | null) {
@@ -131,7 +127,7 @@ export async function createReservation(
 
   const h = await headers()
   const c = await cookies()
-  const ipHash = hashIp(clientIp(h))
+  const ipHash = hashIp(clientIpFrom(h.get("x-forwarded-for")))
 
   let code: string
   try {
