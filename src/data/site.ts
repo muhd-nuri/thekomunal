@@ -31,7 +31,7 @@ export const site = {
 export const nav = {
   links: [
     { label: "Menu", href: "/menu" },
-    { label: "Visit", href: "/#visit" },
+    { label: "Visit", href: "/visit" },
     { label: "Community", href: "/community" },
   ],
   cta: { label: "Reserve", href: "/reserve" },

@@ -41,7 +41,7 @@ export type MenuCategory = {
   slug: string
   name: string
   kind: "food" | "drinks" | "extras"
-  /** When the category is served. */
+  /** When the category is served; empty when it does not apply (add-ons). */
   availability: string
   image?: MenuImage
   groups: MenuGroup[]
@@ -821,7 +821,7 @@ export const menuCategories: MenuCategory[] = [
     slug: "add-ons",
     name: "Add-ons",
     kind: "extras",
-    availability: allDay,
+    availability: "",
     groups: [
       {
         name: "Add to any dish",

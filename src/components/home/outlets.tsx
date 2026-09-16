@@ -6,18 +6,8 @@ import { Character } from "@/components/brand/character"
 import { CTAButton } from "@/components/cta-button"
 import { Emphasis } from "@/components/emphasis"
 import { Section } from "@/components/section"
-import { deliveryLabels, primaryOutlet, type Outlet } from "@/data/outlets"
+import { deliveryLinks, primaryOutlet } from "@/data/outlets"
 import { sections } from "@/data/site"
-
-// A fixed order keeps the buttons deterministic and the keys typed.
-const DELIVERY_KEYS = ["grab", "foodpanda", "shopeefood"] as const
-
-function deliveryLinks(outlet: Outlet) {
-  return DELIVERY_KEYS.flatMap((key) => {
-    const href = outlet.delivery[key]
-    return href ? [{ key, href, label: deliveryLabels[key] }] : []
-  })
-}
 
 export function Outlets() {
   const outlet = primaryOutlet

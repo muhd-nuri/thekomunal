@@ -3,15 +3,21 @@
 import {
   menuCategories,
   menuPdfs,
+  menuUpdatedNote,
+  priceNote,
   signatureDishSlugs,
   type MenuCategory,
+  type MenuGroup,
   type MenuImage,
   type MenuItem,
   type MenuPdf,
   type MenuPrice,
 } from "@/data/menu"
 
-export type { MenuCategory, MenuImage, MenuItem, MenuPdf, MenuPrice }
+export type { MenuCategory, MenuGroup, MenuImage, MenuItem, MenuPdf, MenuPrice }
+
+/** Notes printed with the prices (tax, changes). */
+export const menuNotes = { price: priceNote, updated: menuUpdatedNote } as const
 export type SignatureDish = MenuItem & { image: MenuImage; category: string }
 
 export async function getMenu(): Promise<MenuCategory[]> {

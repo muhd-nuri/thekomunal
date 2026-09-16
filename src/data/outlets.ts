@@ -11,6 +11,8 @@ export type Outlet = {
   city: string
   address: string
   mapsUrl: string
+  /** Search text for the keyless Google Maps embed on /visit. */
+  mapQuery: string
   hours: string
   /** Opening window used by the booking rules, 24h "HH:mm" in Asia/Kuala_Lumpur. */
   opening: { opens: string; closes: string }
@@ -37,6 +39,9 @@ export const outlets: Outlet[] = [
     address: "SH-G-15, Pangsapuri Perkhidmatan Knox Wawasan, 40460 Shah Alam",
     // Footer link on the previous site; resolves to "The Komunal Cafe", Seksyen 32.
     mapsUrl: "https://goo.gl/maps/zRASWN5jN3YJG85M6",
+    // Pins "The Komunal Cafe - Bukit Rimau" (checked 2026-09-17). Google lists the unit as
+    // SH-G-23, not SH-G-15 — TODO: confirm the address with the client.
+    mapQuery: "The Komunal Cafe Bukit Rimau Shah Alam",
     hours: "Open daily 8:30am – 10pm", // TODO: confirm with the client
     opening: { opens: "08:30", closes: "22:00" },
     acceptsReservations: true,
@@ -66,6 +71,16 @@ export const deliveryLabels: Record<keyof Outlet["delivery"], string> = {
   grab: "GrabFood",
   foodpanda: "foodpanda",
   shopeefood: "ShopeeFood",
+}
+
+// A fixed order keeps delivery buttons deterministic and the keys typed.
+const DELIVERY_KEYS = ["grab", "foodpanda", "shopeefood"] as const
+
+export function deliveryLinks(outlet: Outlet) {
+  return DELIVERY_KEYS.flatMap((key) => {
+    const href = outlet.delivery[key]
+    return href ? [{ key, href, label: deliveryLabels[key] }] : []
+  })
 }
 
 export function getOutlet(slug: string) {
