@@ -1,6 +1,6 @@
 "use client"
 // Komunal: dish editor — details, prices (single, options, or per column), photo, flags.
-import { useActionState, useState } from "react"
+import { useState } from "react"
 import { Plus, X } from "lucide-react"
 
 import { deleteItem, saveItem } from "@/app/admin/(panel)/menu/actions"
@@ -8,7 +8,7 @@ import {
   ConfirmDelete,
   Field,
   SubmitButton,
-  useResultToast,
+  useAdminForm,
 } from "@/components/admin/form-kit"
 import { ImageField } from "@/components/admin/image-field"
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,6 @@ import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import type { StoredImage } from "@/db/schema"
-import type { FormState } from "@/lib/admin/form"
 import { senToInput } from "@/lib/menu-format"
 
 type GroupOption = { id: string; label: string; columns: string[] }
@@ -39,8 +38,6 @@ export type ItemFormValues = {
   prices: { label: string; amount: number }[]
 }
 
-const initial: FormState = {}
-
 export function ItemForm({
   item,
   groups,
@@ -48,9 +45,7 @@ export function ItemForm({
   item: ItemFormValues
   groups: GroupOption[]
 }) {
-  const [state, action] = useActionState(saveItem, initial)
-  useResultToast(state)
-  const errors = state.fieldErrors ?? {}
+  const { errors, pending, formProps } = useAdminForm(saveItem)
 
   const [groupId, setGroupId] = useState(item.groupId)
   const columns = groups.find((g) => g.id === groupId)?.columns ?? []
@@ -90,7 +85,7 @@ export function ItemForm({
   const multiple = !columns.length && rows.length > 1
 
   return (
-    <form action={action} className="grid gap-6 lg:grid-cols-[1fr_20rem]">
+    <form {...formProps} className="grid gap-6 lg:grid-cols-[1fr_20rem]">
       {item.id ? <input type="hidden" name="id" value={item.id} /> : null}
       <input type="hidden" name="prices" value={pricesJson} />
 
@@ -320,7 +315,7 @@ export function ItemForm({
         </section>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <SubmitButton className="h-10 px-5">
+          <SubmitButton pending={pending} className="h-10 px-5">
             {item.id ? "Save dish" : "Add dish"}
           </SubmitButton>
           {item.id ? (

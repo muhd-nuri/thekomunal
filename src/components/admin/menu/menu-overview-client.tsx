@@ -1,6 +1,5 @@
 "use client"
 // Komunal: client pieces of /admin/menu — new section form, PDF form, homepage list controls.
-import { useActionState } from "react"
 import { FileText } from "lucide-react"
 
 import {
@@ -16,21 +15,17 @@ import {
   InstantSwitch,
   MoveButtons,
   SubmitButton,
-  useResultToast,
+  useAdminForm,
 } from "@/components/admin/form-kit"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import type { MenuPdfSetting } from "@/db/schema"
-import type { FormState } from "@/lib/admin/form"
-
-const initial: FormState = {}
 
 export function NewCategoryForm() {
-  const [state, action] = useActionState(createCategory, initial)
-  useResultToast(state)
+  const { state, pending, formProps } = useAdminForm(createCategory)
   return (
-    <form action={action} className="flex flex-wrap items-end gap-3">
+    <form {...formProps} className="flex flex-wrap items-end gap-3">
       <Field
         label="New section"
         htmlFor="new-category-name"
@@ -51,7 +46,9 @@ export function NewCategoryForm() {
           <NativeSelectOption value="extras">Add-ons</NativeSelectOption>
         </NativeSelect>
       </Field>
-      <SubmitButton pendingLabel="Adding…">Add section</SubmitButton>
+      <SubmitButton pending={pending} pendingLabel="Adding…">
+        Add section
+      </SubmitButton>
     </form>
   )
 }
@@ -123,13 +120,14 @@ export function SignatureRowControls({
 }
 
 export function MenuPdfForm({ current }: { current?: MenuPdfSetting }) {
-  const [state, action] = useActionState(saveMenuPdf, initial)
-  useResultToast(state)
+  const { pending, formProps } = useAdminForm(saveMenuPdf, {
+    resetOnSuccess: true,
+  })
   const size = current?.bytes
     ? `${(current.bytes / 1024 / 1024).toFixed(1)} MB`
     : null
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <form {...formProps} className="flex flex-col gap-4">
       {current ? (
         <a
           href={current.src}
@@ -168,7 +166,9 @@ export function MenuPdfForm({ current }: { current?: MenuPdfSetting }) {
         <Input id="pdf-file" name="file" type="file" accept="application/pdf" />
       </Field>
       <div>
-        <SubmitButton pendingLabel="Uploading…">Save</SubmitButton>
+        <SubmitButton pending={pending} pendingLabel="Uploading…">
+          Save
+        </SubmitButton>
       </div>
     </form>
   )

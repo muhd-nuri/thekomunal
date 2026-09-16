@@ -294,6 +294,8 @@ export const events = pgTable("events", {
   /** Extra context, e.g. "Held at our former Bukit Jelutong branch." */
   venueNote: text("venue_note").notNull().default(""),
   isPublished: boolean("is_published").notNull().default(true),
+  /** Upcoming events are labelled "Coming up"; the rest "Past event". */
+  isUpcoming: boolean("is_upcoming").notNull().default(false),
   /** The one event the homepage features. */
   isFeatured: boolean("is_featured").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),

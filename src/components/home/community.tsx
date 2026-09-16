@@ -4,7 +4,7 @@ import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
 import { CTAButton } from "@/components/cta-button"
 import { Section } from "@/components/section"
-import { featuredEvent } from "@/data/events"
+import type { CommunityEvent } from "@/data/events"
 import { sections } from "@/data/site"
 import { reveal } from "@/lib/motion"
 import { cn } from "@/lib/utils"
@@ -24,7 +24,11 @@ const posterPlacement = [
   "max-md:hidden md:col-span-2 md:z-30 md:-mt-12 md:-translate-x-6",
 ]
 
-export function Community() {
+export function Community({
+  featuredEvent,
+}: {
+  featuredEvent: CommunityEvent
+}) {
   const reduced = useReducedMotion()
 
   // One reveal for the whole wall — the posters must not cascade individually.
@@ -81,34 +85,36 @@ export function Community() {
           {...revealProps}
           className="grid grid-cols-2 gap-x-5 gap-y-6 md:grid-cols-6 md:gap-x-2 md:gap-y-4 lg:col-span-7"
         >
-          {featuredEvent.posters.map((poster, i) => (
-            <div
-              key={poster.src}
-              className={cn("relative", posterPlacement[i])}
-              style={{ rotate: `${poster.tilt}deg` }}
-            >
-              {/* Aspect reserved on the wrapper, so nothing shifts while the poster loads. */}
-              <div className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-[0_18px_40px_-20px_rgba(0,0,0,0.45)]">
-                <Image
-                  src={poster.src}
-                  alt={poster.alt}
-                  fill
-                  sizes="(min-width: 1024px) 220px, 45vw"
-                  className="object-cover"
+          {featuredEvent.posters
+            .slice(0, posterPlacement.length)
+            .map((poster, i) => (
+              <div
+                key={poster.src}
+                className={cn("relative", posterPlacement[i])}
+                style={{ rotate: `${poster.tilt}deg` }}
+              >
+                {/* Aspect reserved on the wrapper, so nothing shifts while the poster loads. */}
+                <div className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-[0_18px_40px_-20px_rgba(0,0,0,0.45)]">
+                  <Image
+                    src={poster.src}
+                    alt={poster.alt}
+                    fill
+                    sizes="(min-width: 1024px) 220px, 45vw"
+                    className="object-cover"
+                  />
+                </div>
+
+                {/* Tape corners: cream at 70%, no new colour. Outside the clipped box, above the poster. */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -top-2 -left-3 z-10 h-5 w-14 -rotate-[40deg] bg-cream/70"
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -top-2 -right-3 z-10 h-5 w-14 rotate-[40deg] bg-cream/70"
                 />
               </div>
-
-              {/* Tape corners: cream at 70%, no new colour. Outside the clipped box, above the poster. */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-2 -left-3 z-10 h-5 w-14 -rotate-[40deg] bg-cream/70"
-              />
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-2 -right-3 z-10 h-5 w-14 rotate-[40deg] bg-cream/70"
-              />
-            </div>
-          ))}
+            ))}
         </motion.div>
       </div>
     </Section>

@@ -1,7 +1,13 @@
 "use client"
 // Komunal: shared admin form pieces — field wrapper, submit button, result toasts,
 // confirm-before-delete, reorder arrows and instant toggles.
-import { useEffect, useTransition } from "react"
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useTransition,
+} from "react"
 import { useFormStatus } from "react-dom"
 import { useRouter } from "next/navigation"
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react"
@@ -57,13 +63,17 @@ export function SubmitButton({
   pendingLabel = "Saving…",
   className,
   variant,
+  pending: pendingProp,
 }: {
   children: React.ReactNode
   pendingLabel?: string
   className?: string
   variant?: React.ComponentProps<typeof Button>["variant"]
+  /** Pass the pending flag from useAdminForm. */
+  pending?: boolean
 }) {
-  const { pending } = useFormStatus()
+  const status = useFormStatus()
+  const pending = pendingProp ?? status.pending
   return (
     <Button
       type="submit"
@@ -74,6 +84,34 @@ export function SubmitButton({
       {pending ? pendingLabel : children}
     </Button>
   )
+}
+
+/**
+ * useActionState without React's automatic form reset: a failed save keeps what the
+ * person typed. Pass `resetOnSuccess` for forms that should clear after saving.
+ */
+export function useAdminForm(
+  action: (prev: FormState, form: FormData) => Promise<FormState>,
+  options: { resetOnSuccess?: boolean } = {}
+) {
+  const [state, dispatch, pending] = useActionState(action, {} as FormState)
+  const ref = useRef<HTMLFormElement>(null)
+  useResultToast(state)
+  const { resetOnSuccess } = options
+  useEffect(() => {
+    if (resetOnSuccess && state.ok) ref.current?.reset()
+  }, [state, resetOnSuccess])
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const form = new FormData(event.currentTarget)
+    startTransition(() => dispatch(form))
+  }
+  return {
+    state,
+    pending,
+    formProps: { ref, onSubmit },
+    errors: state.fieldErrors ?? {},
+  }
 }
 
 /** Toasts the result of a useActionState form each time it changes. */

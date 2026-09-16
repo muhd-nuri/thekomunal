@@ -74,3 +74,48 @@ export async function createStaffUser(input: {
   })
   return { ok: true as const, user: created }
 }
+
+/** Sets a new password and signs the person out everywhere. */
+export async function resetStaffPassword(userId: string, password: string) {
+  const ctx = await auth.$context
+  const hash = await ctx.password.hash(password)
+  await ctx.internalAdapter.updatePassword(userId, hash)
+  await ctx.internalAdapter.deleteUserSessions(userId)
+}
+
+export async function removeStaffUser(userId: string) {
+  const ctx = await auth.$context
+  await ctx.internalAdapter.deleteUserSessions(userId)
+  await ctx.internalAdapter.deleteUser(userId)
+}
+
+/**
+ * Changes a signed-in person's own password after checking the current one, and signs
+ * out their other devices. Done directly (not via auth.api.changePassword) so a server
+ * action never has to rewrite the session cookie mid-request.
+ */
+export async function changeOwnPassword(input: {
+  userId: string
+  sessionToken: string
+  currentPassword: string
+  newPassword: string
+}) {
+  const ctx = await auth.$context
+  const account = await ctx.internalAdapter.findCredentialAccount(input.userId)
+  if (!account?.password) return false
+  const valid = await ctx.password.verify({
+    hash: account.password,
+    password: input.currentPassword,
+  })
+  if (!valid) return false
+  await ctx.internalAdapter.updatePassword(
+    input.userId,
+    await ctx.password.hash(input.newPassword)
+  )
+  const sessions = await ctx.internalAdapter.listSessions(input.userId)
+  const others = sessions
+    .map((s) => s.token)
+    .filter((token) => token !== input.sessionToken)
+  if (others.length) await ctx.internalAdapter.deleteSessions(others)
+  return true
+}

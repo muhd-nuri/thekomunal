@@ -1,6 +1,6 @@
 "use client"
 // Komunal: client pieces of the section editor — section form, group forms, add-ons, item row controls.
-import { useActionState, useState } from "react"
+import { useState } from "react"
 import { Plus, X } from "lucide-react"
 
 import {
@@ -21,7 +21,7 @@ import {
   InstantSwitch,
   MoveButtons,
   SubmitButton,
-  useResultToast,
+  useAdminForm,
 } from "@/components/admin/form-kit"
 import { ImageField } from "@/components/admin/image-field"
 import { Button } from "@/components/ui/button"
@@ -29,10 +29,7 @@ import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch"
 import type { StoredImage } from "@/db/schema"
-import type { FormState } from "@/lib/admin/form"
 import { senToInput } from "@/lib/menu-format"
-
-const initial: FormState = {}
 
 export function CategoryForm({
   category,
@@ -47,11 +44,9 @@ export function CategoryForm({
     image: StoredImage | null
   }
 }) {
-  const [state, action] = useActionState(updateCategory, initial)
-  useResultToast(state)
-  const errors = state.fieldErrors ?? {}
+  const { errors, pending, formProps } = useAdminForm(updateCategory)
   return (
-    <form action={action} className="grid gap-4 md:grid-cols-2">
+    <form {...formProps} className="grid gap-4 md:grid-cols-2">
       <input type="hidden" name="id" value={category.id} />
       <Field label="Section name" htmlFor="cat-name" error={errors.name}>
         <Input
@@ -122,7 +117,7 @@ export function CategoryForm({
         />
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 md:col-span-2">
-        <SubmitButton>Save section</SubmitButton>
+        <SubmitButton pending={pending}>Save section</SubmitButton>
         <ConfirmDelete
           label="Delete section"
           title={`Delete ${category.name}?`}
@@ -145,18 +140,17 @@ export function GroupForm({
   isLast: boolean
   itemCount: number
 }) {
-  const [state, action] = useActionState(updateGroup, initial)
-  useResultToast(state)
+  const { errors, pending, formProps } = useAdminForm(updateGroup)
   return (
     <form
-      action={action}
+      {...formProps}
       className="grid gap-3 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end"
     >
       <input type="hidden" name="id" value={group.id} />
       <Field
         label="Group name"
         htmlFor={`g-name-${group.id}`}
-        error={state.fieldErrors?.name}
+        error={errors.name}
       >
         <Input
           id={`g-name-${group.id}`}
@@ -188,7 +182,9 @@ export function GroupForm({
         />
       </Field>
       <div className="flex items-center gap-1 md:pb-5">
-        <SubmitButton variant="outline">Save</SubmitButton>
+        <SubmitButton pending={pending} variant="outline">
+          Save
+        </SubmitButton>
         <MoveButtons
           label={group.name}
           isFirst={isFirst}
@@ -212,16 +208,17 @@ export function GroupForm({
 }
 
 export function NewGroupForm({ categoryId }: { categoryId: string }) {
-  const [state, action] = useActionState(createGroup, initial)
-  useResultToast(state)
+  const { errors, pending, formProps } = useAdminForm(createGroup, {
+    resetOnSuccess: true,
+  })
   return (
-    <form action={action} className="flex flex-wrap items-end gap-3">
+    <form {...formProps} className="flex flex-wrap items-end gap-3">
       <input type="hidden" name="categoryId" value={categoryId} />
       <Field
         label="Add a group"
         htmlFor="new-group"
         hint="Groups are sub-headings, like Coffee or Matcha."
-        error={state.fieldErrors?.name}
+        error={errors.name}
       >
         <Input
           id="new-group"
@@ -233,7 +230,11 @@ export function NewGroupForm({ categoryId }: { categoryId: string }) {
         />
       </Field>
       <div className="pb-5">
-        <SubmitButton variant="outline" pendingLabel="Adding…">
+        <SubmitButton
+          pending={pending}
+          variant="outline"
+          pendingLabel="Adding…"
+        >
           Add group
         </SubmitButton>
       </div>
@@ -295,8 +296,7 @@ export function AddOnsForm({
   categoryId: string
   addOns: { label: string; amount: number }[]
 }) {
-  const [state, action] = useActionState(saveAddOns, initial)
-  useResultToast(state)
+  const { pending, formProps } = useAdminForm(saveAddOns)
   const [rows, setRows] = useState<Row[]>(() =>
     addOns.map((a, i) => ({
       key: i,
@@ -310,7 +310,7 @@ export function AddOnsForm({
     )
 
   return (
-    <form action={action} className="flex flex-col gap-3">
+    <form {...formProps} className="flex flex-col gap-3">
       <input type="hidden" name="categoryId" value={categoryId} />
       <input
         type="hidden"
@@ -372,7 +372,7 @@ export function AddOnsForm({
           <Plus data-icon="inline-start" />
           Add row
         </Button>
-        <SubmitButton>Save add-ons</SubmitButton>
+        <SubmitButton pending={pending}>Save add-ons</SubmitButton>
       </div>
     </form>
   )

@@ -15,6 +15,13 @@
       "when": 1789578512245,
       "tag": "0001_cms_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789579953913,
+      "tag": "0002_events_upcoming",
+      "breakpoints": true
     }
   ]
 }

@@ -5,11 +5,16 @@ import { SignatureMenu } from "@/components/home/signature-menu"
 import { Community } from "@/components/home/community"
 import { Reviews } from "@/components/home/reviews"
 import { FinalCta } from "@/components/home/final-cta"
+import { getFeaturedEvent } from "@/lib/events"
 import { formatPrice, getSignatureDishes, lowestPrice } from "@/lib/menu"
 
 export default async function HomePage() {
   // Only what the client component renders crosses the boundary.
-  const dishes = (await getSignatureDishes()).map((dish) => ({
+  const [signature, featuredEvent] = await Promise.all([
+    getSignatureDishes(),
+    getFeaturedEvent(),
+  ])
+  const dishes = signature.map((dish) => ({
     slug: dish.slug,
     name: dish.name,
     description: dish.description ?? "",
@@ -26,7 +31,7 @@ export default async function HomePage() {
       <Tape />
       <Outlets />
       {dishes.length > 0 ? <SignatureMenu dishes={dishes} /> : null}
-      <Community />
+      {featuredEvent ? <Community featuredEvent={featuredEvent} /> : null}
       <Reviews />
       <FinalCta />
     </>

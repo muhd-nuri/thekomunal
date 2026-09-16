@@ -56,6 +56,9 @@ export const communityPage = {
   intro:
     "Komunal means a place to gather. We host music nights, Ramadan evenings and the celebrations people plan around our tables.",
   pastEventLabel: "Past event",
+  upcomingEventLabel: "Coming up",
+  noEvents:
+    "No events to show right now. Follow us on Instagram to hear about the next one first.",
   hostHeading: "Host yours here",
   hostBody:
     "Planning a team celebration, a birthday or a family gathering? We have room for groups of up to {max}, with a discussion space and whiteboard for meetings.",

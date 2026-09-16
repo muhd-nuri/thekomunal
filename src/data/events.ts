@@ -17,6 +17,7 @@ export type CommunityEvent = {
   venue: string
   /** Shown on /community when the posters print a venue that no longer operates. */
   venueNote?: string
+  isUpcoming?: boolean
   description: string
   tagline: string
   posters: EventPoster[]

@@ -9,7 +9,7 @@ import { CTAButton } from "@/components/cta-button"
 import { PageHeader } from "@/components/page-header"
 import { Section } from "@/components/section"
 import { eventTypes } from "@/data/reservation"
-import { events } from "@/data/events"
+import { getPublishedEvents } from "@/lib/events"
 import { primaryOutlet } from "@/data/outlets"
 import { communityPage, withMax } from "@/data/pages"
 import { hero, sections, site } from "@/data/site"
@@ -20,7 +20,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/community" },
 }
 
-export default function CommunityPage() {
+export default async function CommunityPage() {
+  const events = await getPublishedEvents()
   const hostWhatsApp = `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(
     communityPage.hostWhatsAppText
   )}`
@@ -36,6 +37,12 @@ export default function CommunityPage() {
           intro={communityPage.intro}
         />
 
+        {events.length === 0 ? (
+          <p className="mt-12 max-w-[55ch] text-white/90">
+            {communityPage.noEvents}
+          </p>
+        ) : null}
+
         {events.map((event) => (
           <article
             key={event.slug}
@@ -44,7 +51,11 @@ export default function CommunityPage() {
           >
             <div className="lg:col-span-4">
               <p className="text-sm font-extrabold tracking-[0.08em] text-white/70 uppercase">
-                {communityPage.pastEventLabel} · {event.period}
+                {event.isUpcoming
+                  ? communityPage.upcomingEventLabel
+                  : communityPage.pastEventLabel}
+                {event.period ? ` · ${event.period}` : ""}
+                {event.venue ? ` · ${event.venue}` : ""}
               </p>
               <h2
                 id={`${event.slug}-heading`}
