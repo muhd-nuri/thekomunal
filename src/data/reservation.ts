@@ -97,7 +97,7 @@ export const reservationCopy = {
       decrease: "Remove a guest",
       increase: "Add a guest",
     },
-    date: { label: "Date" },
+    date: { label: "Date", placeholder: "Choose a date" },
     time: {
       label: "Time",
       groups: {

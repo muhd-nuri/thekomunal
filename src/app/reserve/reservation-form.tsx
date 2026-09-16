@@ -16,6 +16,7 @@ import { CircleAlert, MapPin, Minus, Plus } from "lucide-react"
 
 import { createReservation } from "@/app/reserve/actions"
 import { WhatsAppIcon } from "@/components/brand/social-icons"
+import { DatePicker } from "@/components/date-picker"
 import { ctaClasses } from "@/components/cta-button"
 import { getOutlet, primaryOutlet } from "@/data/outlets"
 import { eventTypes, reservationCopy } from "@/data/reservation"
@@ -260,7 +261,8 @@ export function ReservationForm({
         if (!inputs?.length) return null
         const list = Array.from(inputs)
         const el = list.find((i) => i.checked) ?? list[0]
-        return el.type === "hidden" ? null : el
+        if (el.type !== "hidden") return el
+        return document.getElementById(field)
       })
       .find((el) => el !== null)
 
@@ -534,19 +536,38 @@ export function ReservationForm({
             {fieldCopy.date.label}
             <Required />
           </label>
-          <input
+          {/* No JavaScript: the native picker posts the date (first "date" in the form wins). */}
+          <noscript>
+            <input
+              type="date"
+              name="date"
+              min={today}
+              max={maxDate}
+              defaultValue={defaults.date}
+              className={cn(fieldClass, "mt-2")}
+            />
+          </noscript>
+          {/* Bound to form state: RHF does not write setValue() into hidden inputs. */}
+          <input type="hidden" {...register("date")} value={date} />
+          <DatePicker
             id="date"
-            type="date"
+            value={date}
             min={today}
             max={maxDate}
+            placeholder={fieldCopy.date.placeholder}
+            isUnavailable={(value) =>
+              availableSlots(value, outlet.opening, now).length === 0
+            }
+            onChange={(value) =>
+              setValue("date", value, {
+                shouldDirty: true,
+                shouldTouch: true,
+                shouldValidate: true,
+              })
+            }
+            className={cn(fieldClass, "mt-2")}
             aria-required="true"
-            defaultValue={defaults.date}
-            className={cn(
-              fieldClass,
-              "mt-2 appearance-none text-left [&::-webkit-date-and-time-value]:text-left"
-            )}
             {...a11y("date")}
-            {...register("date")}
           />
           <FieldError id={errorId("date")} message={errorFor("date")} />
         </div>
