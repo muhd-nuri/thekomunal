@@ -57,8 +57,7 @@ export function Community() {
             </span>
             {" · "}
             {featuredEvent.period}
-            {" · "}
-            {featuredEvent.venue}
+            {featuredEvent.venue ? ` · ${featuredEvent.venue}` : null}
           </p>
 
           <p className="mt-4 max-w-[60ch] text-white/90">

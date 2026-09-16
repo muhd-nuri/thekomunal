@@ -188,9 +188,4 @@ export const menuPdfs = [
     label: "Bukit Rimau menu",
     href: "https://thekomunal.com/wp-content/uploads/2025/05/The-Komunal-Menu-2.pdf",
   },
-  {
-    outletSlug: "bukit-jelutong",
-    label: "Bukit Jelutong menu",
-    href: "https://thekomunal.com/wp-content/uploads/2025/05/Komunal-BJ-Menu-2_compressed.pdf",
-  },
 ] as const

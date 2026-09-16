@@ -8,7 +8,7 @@ import {
 } from "@/components/brand/social-icons"
 
 import { reservation, site } from "@/data/site"
-import { outlets } from "@/data/outlets"
+import { primaryOutlet } from "@/data/outlets"
 import { Section } from "@/components/section"
 import { Logo } from "@/components/brand/logo"
 import { logotypePaths } from "@/components/brand/logo-paths"
@@ -41,26 +41,25 @@ export function Footer() {
     >
       <div className="mx-auto max-w-7xl px-gutter">
         <div className="grid gap-12 md:grid-cols-3 md:gap-10">
-          {/* Outlets */}
+          {/* Visit */}
           <div>
-            <h2 className={headingClass}>Outlets</h2>
-            <ul className="mt-5 flex flex-col gap-4">
-              {outlets.map((outlet) => (
-                <li key={outlet.slug}>
-                  <a
-                    href={outlet.mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-extrabold underline-offset-4 hover:underline"
-                  >
-                    {outlet.shortName}
-                  </a>
-                  <p className="text-sm font-medium text-white/80">
-                    {outlet.city}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <h2 className={headingClass}>Visit</h2>
+            <a
+              href={primaryOutlet.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-block font-extrabold underline-offset-4 hover:underline"
+            >
+              {primaryOutlet.shortName}
+            </a>
+            <p className="mt-2 max-w-[32ch] text-sm font-medium text-white/80">
+              {primaryOutlet.address}
+            </p>
+            {primaryOutlet.hours ? (
+              <p className="mt-2 text-sm font-medium text-white/80">
+                {primaryOutlet.hours}
+              </p>
+            ) : null}
           </div>
 
           {/* Contact */}

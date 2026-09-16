@@ -25,7 +25,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     }
     raf = requestAnimationFrame(loop)
 
-    // Same-page anchors (e.g. "Order delivery" → #outlets) go through Lenis so the
+    // Same-page anchors (e.g. "Order delivery" → #visit) go through Lenis so the
     // easing matches the rest of the page; the navbar is fixed, so offset for it.
     const onClick = (event: MouseEvent) => {
       if (

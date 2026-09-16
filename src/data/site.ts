@@ -6,7 +6,7 @@ export const site = {
   shortName: "komunal",
   tagline: "Specialty coffee for community",
   description:
-    "Community specialty cafés in Shah Alam serving specialty coffee and a full western kitchen — pasta, lamb, salmon, breakfast — plus events worth coming back for.",
+    "A community specialty café in Bukit Rimau, Shah Alam, serving specialty coffee and a full western kitchen — pasta, lamb, salmon, breakfast — plus events worth coming back for.",
   entity: "THE KOMUNAL SDN. BHD. (1455687-W)",
   city: "Shah Alam",
   /** Current site lists 011-2668 5945 for enquiries — TODO: confirm canonical number. */
@@ -31,7 +31,7 @@ export const site = {
 export const nav = {
   links: [
     { label: "Menu", href: "/menu" },
-    { label: "Outlets", href: "/#outlets" },
+    { label: "Visit", href: "/#visit" },
     { label: "Community", href: "/community" },
   ],
   cta: { label: "Reserve", href: "/reserve" },
@@ -44,7 +44,7 @@ export const hero = {
   support:
     "Specialty coffee and good food, made for the komunal. Find your table in Shah Alam.",
   primary: { label: "Reserve a table", href: "/reserve" },
-  secondary: { label: "Order delivery", href: "#outlets" },
+  secondary: { label: "Order delivery", href: "#visit" },
   image: {
     src: "/images/hero/cafe-guests-interior.jpg",
     alt: "Guests sharing a long table inside The Komunal café, brick wall and greenery behind them",
@@ -56,7 +56,7 @@ export const hero = {
     {
       shout: "Coffee for everyone.",
       support:
-        "Community cafés in Bukit Rimau and Bukit Jelutong, open every day from 8:30am.",
+        "Your community café in Bukit Rimau, open every day from 8:30am.",
     },
     {
       shout: "Good juju inside.",
@@ -97,10 +97,10 @@ export const reservation = {
 
 export const sections = {
   outlets: {
-    eyebrow: "Outlets",
+    eyebrow: "Visit us",
     heading: "Find your",
     emphasis: "komunal",
-    family: "The family",
+    deliveryLabel: "Staying in? Order delivery",
   },
   menu: {
     eyebrow: "Signature menu",
