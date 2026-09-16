@@ -1,5 +1,6 @@
 // Komunal: footer — oversized brand statement; a giant cropped white logotype holds up the whole band.
 
+import Link from "next/link"
 import { Phone } from "lucide-react"
 import {
   FacebookIcon,
@@ -132,7 +133,15 @@ export function Footer() {
 
         {/* Legal */}
         <div className="mt-16 flex flex-col gap-1 text-sm font-medium text-white/70 sm:flex-row sm:items-center sm:justify-between">
-          <p>{site.entity}</p>
+          <p className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
+            <span>{site.entity}</span>
+            <Link
+              href="/privacy"
+              className="underline-offset-4 hover:underline"
+            >
+              Privacy notice
+            </Link>
+          </p>
           <p>
             © {year} {site.name}
           </p>

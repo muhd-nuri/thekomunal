@@ -12,11 +12,18 @@ declare global {
 export type PixelEvent =
   "PageView" | "Lead" | "Contact" | "ViewContent" | (string & {})
 
+export type PixelOptions = {
+  /** Deduplicates the browser event against a server (CAPI) event with the same ID. */
+  eventID?: string
+}
+
 export function trackPixel(
   event: PixelEvent,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
+  options?: PixelOptions
 ) {
   if (typeof window === "undefined" || !window.fbq) return
-  if (params) window.fbq("track", event, params)
+  if (options) window.fbq("track", event, params ?? {}, options)
+  else if (params) window.fbq("track", event, params)
   else window.fbq("track", event)
 }

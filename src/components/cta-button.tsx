@@ -15,6 +15,16 @@ const variantClass = {
   link: "group min-h-[44px]",
 } as const
 
+export type CTAVariant = keyof typeof variantClass
+
+/** The pill styling on its own, so a real `<button type="submit">` can match the links. */
+export function ctaClasses(
+  variant: CTAVariant = "primary",
+  className?: string
+) {
+  return cn(base, variantClass[variant], className)
+}
+
 export function CTAButton({
   variant = "primary",
   href,
@@ -23,7 +33,7 @@ export function CTAButton({
   external = false,
   ariaLabel,
 }: {
-  variant?: "primary" | "on-brand" | "link"
+  variant?: CTAVariant
   href: string
   children: React.ReactNode
   className?: string
@@ -46,7 +56,7 @@ export function CTAButton({
     </>
   )
 
-  const classes = cn(base, variantClass[variant], className)
+  const classes = ctaClasses(variant, className)
 
   if (isInternal && !external) {
     return (

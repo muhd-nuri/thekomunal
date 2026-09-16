@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 import { MetaPixel } from "@/components/meta-pixel"
+import { AttributionCapture } from "@/components/attribution-capture"
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -43,6 +44,7 @@ export default function RootLayout({
         </SmoothScroll>
         <WhatsAppFloat />
         <MetaPixel />
+        <AttributionCapture />
       </body>
     </html>
   )
