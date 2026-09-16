@@ -30,12 +30,16 @@ export type TelegramBookingInput = {
   landingPath?: string | null
   /** Prefilled staff → guest wa.me link */
   whatsappUrl: string
+  /** Admin detail page; only https URLs are allowed on Telegram buttons. */
+  adminUrl?: string | null
+  /** Marks a message sent again from the admin. */
+  resent?: boolean
 }
 
 export function buildBookingMessage(input: TelegramBookingInput) {
   const e = escapeHtml
   const lines = [
-    `🆕 <b>New reservation · ${e(input.code)}</b>`,
+    `${input.resent ? "🔁" : "🆕"} <b>${input.resent ? "Reservation (resent)" : "New reservation"} · ${e(input.code)}</b>`,
     `📍 ${e(input.outletName)}`,
     `🗓 ${e(input.when)}`,
     `👥 ${input.guests} pax${input.eventLabel ? ` · 🎉 ${e(input.eventLabel)}` : ""}`,
@@ -51,12 +55,14 @@ export function buildBookingMessage(input: TelegramBookingInput) {
   if (input.landingPath) lines.push(`↳ landed on ${e(input.landingPath)}`)
 
   const buttonName = firstNameOf(input.name).slice(0, 24)
+  const buttons = [
+    { text: `💬 WhatsApp ${buttonName}`, url: input.whatsappUrl },
+  ]
+  if (input.adminUrl?.startsWith("https://")) {
+    buttons.push({ text: "🗂 Open in admin", url: input.adminUrl })
+  }
   return {
     text: lines.join("\n"),
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: `💬 WhatsApp ${buttonName}`, url: input.whatsappUrl }],
-      ],
-    },
+    reply_markup: { inline_keyboard: [buttons] },
   }
 }

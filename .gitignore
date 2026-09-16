@@ -44,3 +44,4 @@ next-env.d.ts
 # project brief + client brand book (kept locally, not in git)
 /komunal_*.md
 /TK24 BRANDING V1.pdf
+/uploads/

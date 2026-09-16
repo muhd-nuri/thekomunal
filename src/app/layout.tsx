@@ -2,12 +2,6 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { brandFont } from "./fonts"
 import { site } from "@/data/site"
-import { SmoothScroll } from "@/components/smooth-scroll"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { WhatsAppFloat } from "@/components/whatsapp-float"
-import { MetaPixel } from "@/components/meta-pixel"
-import { AttributionCapture } from "@/components/attribution-capture"
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -36,16 +30,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={brandFont.variable}>
-      <body className="bg-cream font-body text-ink">
-        <SmoothScroll>
-          <Navbar />
-          <main id="main">{children}</main>
-          <Footer />
-        </SmoothScroll>
-        <WhatsAppFloat />
-        <MetaPixel />
-        <AttributionCapture />
-      </body>
+      <body className="bg-cream font-body text-ink">{children}</body>
     </html>
   )
 }

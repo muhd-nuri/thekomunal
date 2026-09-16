@@ -2,7 +2,7 @@
 import type { Metadata } from "next"
 import { Clock, MapPin } from "lucide-react"
 
-import { ReservationForm } from "@/app/reserve/reservation-form"
+import { ReservationForm } from "@/app/(site)/reserve/reservation-form"
 import { BlobMask } from "@/components/brand/blob-mask"
 import { Character } from "@/components/brand/character"
 import { WhatsAppIcon } from "@/components/brand/social-icons"

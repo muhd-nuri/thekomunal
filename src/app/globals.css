@@ -56,6 +56,21 @@
   --ring: #24247b;
 
   --grain-opacity: 0.03;
+
+  --sidebar: #24247b;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #24247b;
+  --sidebar-accent: oklch(0.36 0.12 275);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: oklch(0.4 0.1 275);
+  --sidebar-ring: #ffffff;
+}
+
+/* Admin is an internal tool: destructive actions get a real red there, never on the public site. */
+.admin-area {
+  --destructive: oklch(0.55 0.2 27);
+  --background: oklch(0.985 0.003 67);
 }
 
 /* Expose the shadcn semantic tokens as Tailwind colours (bg-background, text-foreground, …) */
@@ -87,6 +102,14 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 @layer base {
@@ -166,4 +189,9 @@
   .komunal-marquee-track {
     animation: none;
   }
+}
+
+/* The admin panel has no film grain. */
+body:has(.admin-area)::after {
+  display: none;
 }

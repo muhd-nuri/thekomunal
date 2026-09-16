@@ -46,6 +46,37 @@ test("builds the booking message", () => {
   })
 })
 
+test("adds the admin button only for https URLs, and marks resends", () => {
+  const base = {
+    code: "KM-7F3K2",
+    outletName: "Komunal Bukit Rimau",
+    when: "Sun, 20 Sep 2026 · 7:30 PM",
+    guests: 2,
+    name: "Aina",
+    phoneE164: "60123456789",
+    email: "aina@email.com",
+    channel: "direct" as const,
+    whatsappUrl: "https://wa.me/60123456789",
+  }
+  const withAdmin = buildBookingMessage({
+    ...base,
+    adminUrl: "https://thekomunal.com/admin/reservations/abc",
+    resent: true,
+  })
+  expect(withAdmin.reply_markup.inline_keyboard[0][1]).toEqual({
+    text: "🗂 Open in admin",
+    url: "https://thekomunal.com/admin/reservations/abc",
+  })
+  expect(
+    withAdmin.text.startsWith("🔁 <b>Reservation (resent) · KM-7F3K2</b>")
+  ).toBe(true)
+  const local = buildBookingMessage({
+    ...base,
+    adminUrl: "http://localhost:3000/admin/reservations/abc",
+  })
+  expect(local.reply_markup.inline_keyboard[0]).toHaveLength(1)
+})
+
 test("booking codes use the unambiguous alphabet", () => {
   for (let i = 0; i < 500; i++)
     expect(generateBookingCode()).toMatch(BOOKING_CODE_RE)

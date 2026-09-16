@@ -8,14 +8,9 @@ import { redirect } from "next/navigation"
 import { after } from "next/server"
 
 import { db } from "@/db"
-import { reservations } from "@/db/schema"
+import { reservations, type Reservation } from "@/db/schema"
 import { getOutlet } from "@/data/outlets"
-import {
-  bookingRules,
-  eventTypeLabel,
-  reservationCopy,
-  staffWhatsAppMessage,
-} from "@/data/reservation"
+import { bookingRules, reservationCopy } from "@/data/reservation"
 import {
   FIRST_TOUCH_COOKIE,
   LAST_TOUCH_COOKIE,
@@ -25,14 +20,9 @@ import {
 } from "@/lib/attribution"
 import { generateBookingCode } from "@/lib/booking-code"
 import { clientIpFrom } from "@/lib/client-ip"
-import {
-  checkBookingTime,
-  formatSlotLong,
-  formatSlotShort,
-} from "@/lib/booking-time"
+import { checkBookingTime } from "@/lib/booking-time"
 import { normaliseMyMobile } from "@/lib/phone"
-import { sendTelegramMessage } from "@/lib/telegram"
-import { buildBookingMessage, firstNameOf } from "@/lib/telegram-message"
+import { notifyReservation } from "@/lib/reservation-notify"
 import {
   HONEYPOT_FIELD,
   reservationFields,
@@ -185,72 +175,24 @@ export async function createReservation(
       ipHash,
     }
 
-    let inserted: { id: string; code: string } | undefined
+    let inserted: Reservation | undefined
     for (let attempt = 0; attempt < 5 && !inserted; attempt++) {
       try {
         ;[inserted] = await db
           .insert(reservations)
           .values({ ...row, code: generateBookingCode() })
-          .returning({ id: reservations.id, code: reservations.code })
+          .returning()
       } catch (error) {
         if (!isUniqueCodeViolation(error)) throw error
       }
     }
     if (!inserted) throw new Error("Could not allocate a booking code")
     code = inserted.code
-    const reservationId = inserted.id
+    const saved = inserted
 
     // Notify the booking team after the guest has their confirmation page.
     after(async () => {
-      const firstName = firstNameOf(data.name)
-      const waText = staffWhatsAppMessage({
-        firstName,
-        outletName: outlet.shortName,
-        code,
-        guests: data.guests,
-        when: formatSlotShort(slot.at),
-      })
-      const message = buildBookingMessage({
-        code,
-        outletName: outlet.shortName,
-        when: formatSlotLong(slot.at),
-        guests: data.guests,
-        eventLabel: eventTypeLabel(data.eventType),
-        name: data.name,
-        phoneE164,
-        email: data.email,
-        company: data.company,
-        notes: data.notes,
-        channel,
-        channelDetail: detail,
-        landingPath: lastTouch?.landing,
-        whatsappUrl: `https://wa.me/${phoneE164}?text=${encodeURIComponent(waText)}`,
-      })
-      const result = await sendTelegramMessage({
-        ...message,
-        threadId: outlet.telegramThreadId,
-      })
-      try {
-        await db
-          .update(reservations)
-          .set(
-            result.ok
-              ? {
-                  telegramStatus: "sent",
-                  telegramMessageId: result.messageId,
-                  telegramError: null,
-                }
-              : { telegramStatus: "failed", telegramError: result.error }
-          )
-          .where(eq(reservations.id, reservationId))
-      } catch (error) {
-        console.error(
-          `[reserve] could not record Telegram status for ${code}`,
-          error
-        )
-      }
-      if (!result.ok)
-        console.error(`[reserve] Telegram failed for ${code}: ${result.error}`)
+      await notifyReservation(saved)
     })
   } catch (error) {
     console.error("[reserve] could not save reservation", error)

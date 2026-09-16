@@ -14,7 +14,7 @@ import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CircleAlert, MapPin, Minus, Plus } from "lucide-react"
 
-import { createReservation } from "@/app/reserve/actions"
+import { createReservation } from "@/app/(site)/reserve/actions"
 import { WhatsAppIcon } from "@/components/brand/social-icons"
 import { DatePicker } from "@/components/date-picker"
 import { ctaClasses } from "@/components/cta-button"
