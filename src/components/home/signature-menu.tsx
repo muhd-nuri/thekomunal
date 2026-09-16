@@ -4,11 +4,18 @@ import { useState } from "react"
 import Image from "next/image"
 import { CTAButton } from "@/components/cta-button"
 import { Section } from "@/components/section"
-import { signatureDishes } from "@/data/menu"
 import { sections } from "@/data/site"
 import { cn } from "@/lib/utils"
 
-export function SignatureMenu() {
+export type SignatureMenuDish = {
+  slug: string
+  name: string
+  description: string
+  price: string
+  image: { src: string; alt: string }
+}
+
+export function SignatureMenu({ dishes }: { dishes: SignatureMenuDish[] }) {
   const [active, setActive] = useState(0)
 
   return (
@@ -18,7 +25,7 @@ export function SignatureMenu() {
             Sticky lives on the wrapper: `fill` needs a relative/absolute parent. */}
         <div className="lg:sticky lg:top-24">
           <div className="relative aspect-square overflow-hidden rounded-card">
-            {signatureDishes.map((dish, index) => (
+            {dishes.map((dish, index) => (
               <Image
                 key={dish.slug}
                 src={dish.image.src}
@@ -46,7 +53,7 @@ export function SignatureMenu() {
           </p>
 
           <ol className="mt-8">
-            {signatureDishes.map((dish, index) => {
+            {dishes.map((dish, index) => {
               const isActive = index === active
 
               return (
@@ -69,6 +76,9 @@ export function SignatureMenu() {
                       {isActive ? (
                         <span className="mt-1 block max-w-[42ch] text-sm text-ink-muted">
                           {dish.description}
+                          <span className="mt-1 block font-extrabold text-brand">
+                            {dish.price}
+                          </span>
                         </span>
                       ) : null}
                       {/* Brand underline marks the active row — no second colour, no grey fill. */}

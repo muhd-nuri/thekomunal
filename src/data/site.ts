@@ -6,7 +6,7 @@ export const site = {
   shortName: "komunal",
   tagline: "Specialty coffee for community",
   description:
-    "A community specialty café in Bukit Rimau, Shah Alam, serving specialty coffee and a full western kitchen — pasta, lamb, salmon, breakfast — plus events worth coming back for.",
+    "A community specialty café in Bukit Rimau, Shah Alam, serving specialty coffee and a full kitchen — nasi lemak, pasta, lamb grill, breakfast — plus events worth coming back for.",
   entity: "THE KOMUNAL SDN. BHD. (1455687-W)",
   city: "Shah Alam",
   /** Current site lists 011-2668 5945 for enquiries — TODO: confirm canonical number. */
@@ -106,7 +106,7 @@ export const sections = {
     eyebrow: "Signature menu",
     heading: "From the kitchen",
     intro:
-      "A full kitchen, not just pastries. Pasta, lamb, salmon and a proper breakfast.",
+      "A full kitchen, not just pastries. Our best sellers, from nasi lemak to lamb grill.",
     cta: { label: "See the menu", href: "/menu" },
   },
   community: {
