@@ -36,11 +36,10 @@ export const outlets: Outlet[] = [
     shortName: "Komunal Bukit Rimau",
     area: "Seksyen 32",
     city: "Shah Alam",
-    address: "SH-G-15, Pangsapuri Perkhidmatan Knox Wawasan, 40460 Shah Alam",
+    address: "SH-G-23, Pangsapuri Perkhidmatan Knox Wawasan, 40460 Shah Alam",
     // Footer link on the previous site; resolves to "The Komunal Cafe", Seksyen 32.
     mapsUrl: "https://goo.gl/maps/zRASWN5jN3YJG85M6",
-    // Pins "The Komunal Cafe - Bukit Rimau" (checked 2026-09-17). Google lists the unit as
-    // SH-G-23, not SH-G-15 — TODO: confirm the address with the client.
+    // Pins "The Komunal Cafe - Bukit Rimau" (checked 2026-09-17).
     mapQuery: "The Komunal Cafe Bukit Rimau Shah Alam",
     hours: "Open daily 8:30am – 10pm", // TODO: confirm with the client
     opening: { opens: "08:30", closes: "22:00" },

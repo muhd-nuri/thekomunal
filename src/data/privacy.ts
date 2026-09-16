@@ -162,6 +162,10 @@ export const privacyEn: PrivacyNotice = {
           kind: "p",
           text: "Our website uses the Meta (Facebook) Pixel. It tells Meta when a page on our site is viewed, and when a booking request is sent.",
         },
+        {
+          kind: "p",
+          text: "Our Visit page shows a Google Maps map. When you open that page, your browser loads the map from Google, which receives your IP address and may set its own cookies.",
+        },
       ],
     },
     {
@@ -209,6 +213,7 @@ export const privacyEn: PrivacyNotice = {
             "Telegram, which we use to send new booking details to our team's internal group.",
             "WhatsApp, which we use to contact you about your booking.",
             "Meta, which receives data from the Meta Pixel.",
+            "Google, which receives your IP address when the map on our Visit page loads.",
             "The provider that hosts our server.",
             "Government authorities, courts or regulators, where the law requires it.",
           ],
@@ -307,6 +312,12 @@ export const privacyEn: PrivacyNotice = {
                 "Help Meta measure visits and booking requests from our ads.",
               duration: "Set by Meta",
             },
+            {
+              name: "Google Maps cookies",
+              setBy: "Google",
+              purpose: "Set by the map on our Visit page, if you open it.",
+              duration: "Set by Google",
+            },
           ],
         },
         {
@@ -404,6 +415,10 @@ export const privacyMs: PrivacyNotice = {
           kind: "p",
           text: "Laman web kami menggunakan Meta (Facebook) Pixel. Ia memberitahu Meta apabila halaman di laman web kami dilihat, dan apabila permintaan tempahan dihantar.",
         },
+        {
+          kind: "p",
+          text: "Halaman Lawatan kami memaparkan peta Google Maps. Apabila anda membuka halaman itu, pelayar anda memuatkan peta daripada Google, yang menerima alamat IP anda dan mungkin menetapkan kukinya sendiri.",
+        },
       ],
     },
     {
@@ -451,6 +466,7 @@ export const privacyMs: PrivacyNotice = {
             "Telegram, yang kami gunakan untuk menghantar butiran tempahan baharu ke kumpulan dalaman pasukan kami.",
             "WhatsApp, yang kami gunakan untuk menghubungi anda mengenai tempahan anda.",
             "Meta, yang menerima data daripada Meta Pixel.",
+            "Google, yang menerima alamat IP anda apabila peta di halaman Lawatan kami dimuatkan.",
             "Penyedia yang mengehos pelayan kami.",
             "Pihak berkuasa kerajaan, mahkamah atau pengawal selia, apabila dikehendaki oleh undang-undang.",
           ],
@@ -548,6 +564,13 @@ export const privacyMs: PrivacyNotice = {
               purpose:
                 "Membantu Meta mengukur lawatan dan permintaan tempahan daripada iklan kami.",
               duration: "Ditetapkan oleh Meta",
+            },
+            {
+              name: "Kuki Google Maps",
+              setBy: "Google",
+              purpose:
+                "Ditetapkan oleh peta di halaman Lawatan kami, jika anda membukanya.",
+              duration: "Ditetapkan oleh Google",
             },
           ],
         },
