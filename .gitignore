@@ -34,3 +34,13 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# keep the env template
+!.env.example
+
+# local screenshots
+/screenshots/
+
+# project brief + client brand book (kept locally, not in git)
+/komunal_*.md
+/TK24 BRANDING V1.pdf
