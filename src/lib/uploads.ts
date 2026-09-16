@@ -8,7 +8,8 @@ import { join, resolve } from "node:path"
 import sharp, { type OutputInfo } from "sharp"
 
 export const UPLOAD_DIR = resolve(
-  process.env.UPLOAD_DIR || join(/*turbopackIgnore: true*/ process.cwd(), "uploads")
+  process.env.UPLOAD_DIR ||
+    join(/*turbopackIgnore: true*/ process.cwd(), "uploads")
 )
 export const MEDIA_PREFIX = "/media/"
 

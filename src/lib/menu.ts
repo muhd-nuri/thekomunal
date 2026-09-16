@@ -1,11 +1,12 @@
-// Komunal: the only way pages read the menu. Phase 4 swaps the static data for Postgres here,
-// so keep these signatures async and keep callers away from `@/data/menu`.
+// Komunal: the only way pages read the menu. Reads Postgres (edited in /admin/menu);
+// CMS saves call revalidatePath("/") and revalidatePath("/menu").
+import "server-only"
+import { asc, eq, isNotNull } from "drizzle-orm"
+
+import { db, schema } from "@/db"
 import {
-  menuCategories,
-  menuPdfs,
   menuUpdatedNote,
   priceNote,
-  signatureDishSlugs,
   type MenuCategory,
   type MenuGroup,
   type MenuImage,
@@ -13,44 +14,85 @@ import {
   type MenuPdf,
   type MenuPrice,
 } from "@/data/menu"
+import type { MenuPdfSetting } from "@/db/schema"
+import { assembleMenu } from "@/lib/menu-format"
 
 export type { MenuCategory, MenuGroup, MenuImage, MenuItem, MenuPdf, MenuPrice }
+export { formatPrice, lowestPrice, priceSummary } from "@/lib/menu-format"
 
 /** Notes printed with the prices (tax, changes). */
 export const menuNotes = { price: priceNote, updated: menuUpdatedNote } as const
 export type SignatureDish = MenuItem & { image: MenuImage; category: string }
 
+export const SIGNATURE_LIMIT = 8
+export const MENU_PDF_KEY = "menu_pdf"
+
 export async function getMenu(): Promise<MenuCategory[]> {
-  return menuCategories
+  const [categories, groups, items, prices, addOns] = await Promise.all([
+    db.select().from(schema.menuCategories),
+    db.select().from(schema.menuGroups),
+    db.select().from(schema.menuItems),
+    db.select().from(schema.menuItemPrices),
+    db.select().from(schema.menuCategoryAddOns),
+  ])
+  return assembleMenu({ categories, groups, items, prices, addOns })
 }
 
+/** The homepage spread: dishes with a signature slot, a photo, and at least one price. */
 export async function getSignatureDishes(): Promise<SignatureDish[]> {
-  const items = menuCategories.flatMap((category) =>
-    category.groups.flatMap((group) =>
-      group.items.map((item) => ({ ...item, category: category.name }))
+  const rows = await db
+    .select({
+      item: schema.menuItems,
+      category: schema.menuCategories.name,
+      categoryVisible: schema.menuCategories.isVisible,
+    })
+    .from(schema.menuItems)
+    .innerJoin(
+      schema.menuGroups,
+      eq(schema.menuItems.groupId, schema.menuGroups.id)
     )
+    .innerJoin(
+      schema.menuCategories,
+      eq(schema.menuGroups.categoryId, schema.menuCategories.id)
+    )
+    .where(isNotNull(schema.menuItems.signatureOrder))
+    .orderBy(asc(schema.menuItems.signatureOrder))
+
+  const eligible = rows.filter(
+    (row) => row.item.isAvailable && row.categoryVisible && row.item.image
   )
-  return signatureDishSlugs.map((slug) => {
-    const item = items.find((candidate) => candidate.slug === slug)
-    if (!item?.image)
-      throw new Error(`Signature dish "${slug}" is missing or has no photo`)
-    return { ...item, image: item.image }
+  const prices = eligible.length
+    ? await db.select().from(schema.menuItemPrices)
+    : []
+
+  return eligible
+    .map(({ item, category }): SignatureDish => ({
+      slug: item.slug,
+      name: item.name,
+      description: item.description ?? undefined,
+      optionsLabel: item.optionsLabel ?? undefined,
+      bestSeller: item.isBestSeller,
+      image: item.image!,
+      category,
+      prices: prices
+        .filter((p) => p.itemId === item.id)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((p) => ({ label: p.label, amount: p.amount })),
+    }))
+    .filter((dish) => dish.prices.length > 0)
+    .slice(0, SIGNATURE_LIMIT)
+}
+
+export async function getMenuPdfSetting(): Promise<MenuPdfSetting | undefined> {
+  const row = await db.query.siteSettings.findFirst({
+    where: eq(schema.siteSettings.key, MENU_PDF_KEY),
   })
+  return row?.value as MenuPdfSetting | undefined
 }
 
 export async function getMenuPdf(
   outletSlug: string
 ): Promise<MenuPdf | undefined> {
-  return menuPdfs.find((pdf) => pdf.outletSlug === outletSlug)
-}
-
-/** 2500 → "RM 25", 1250 → "RM 12.50". */
-export function formatPrice(sen: number): string {
-  const ringgit = sen / 100
-  return `RM ${Number.isInteger(ringgit) ? ringgit : ringgit.toFixed(2)}`
-}
-
-/** The lowest price, for "from RM 11" on items with options. */
-export function lowestPrice(item: MenuItem): number {
-  return Math.min(...item.prices.map((price) => price.amount))
+  const pdf = await getMenuPdfSetting()
+  return pdf?.src ? { outletSlug, label: pdf.label, href: pdf.src } : undefined
 }

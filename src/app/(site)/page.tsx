@@ -25,7 +25,7 @@ export default async function HomePage() {
       <Hero />
       <Tape />
       <Outlets />
-      <SignatureMenu dishes={dishes} />
+      {dishes.length > 0 ? <SignatureMenu dishes={dishes} /> : null}
       <Community />
       <Reviews />
       <FinalCta />
