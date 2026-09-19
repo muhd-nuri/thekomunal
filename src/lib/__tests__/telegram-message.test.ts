@@ -15,7 +15,7 @@ test("escapes HTML in user input", () => {
 
 test("builds the booking message in the team's layout", () => {
   const { text, reply_markup } = buildBookingMessage({
-    code: "KM-7F3K2",
+    refCode: "ig-bio",
     date: "2026-09-20",
     time: "19:30",
     guests: 6,
@@ -30,7 +30,7 @@ test("builds the booking message in the team's layout", () => {
     [
       "📍The Komunal Reservation",
       "",
-      "Ref: KM-7F3K2",
+      "Ref: ig-bio",
       "",
       "Name: Aina &lt;Rahman&gt;",
       "Email: aina@email.com",
@@ -48,9 +48,8 @@ test("builds the booking message in the team's layout", () => {
   })
 })
 
-test("prints a dash for a missing occasion or blank notes", () => {
+test("prints a dash for a missing ref, occasion or blank notes", () => {
   const { text } = buildBookingMessage({
-    code: "KM-7F3K2",
     date: "2026-09-20",
     time: "12:00",
     guests: 2,
@@ -60,6 +59,8 @@ test("prints a dash for a missing occasion or blank notes", () => {
     notes: "   ",
     whatsappUrl: "https://wa.me/60123456789",
   })
+  expect(text).toContain("Ref: -")
+  expect(text).not.toContain("KM-")
   expect(text).toContain("Occasion: -")
   expect(text.endsWith("Notes: -")).toBe(true)
 })
@@ -72,7 +73,6 @@ test("names the weekday from the calendar date, not the server clock", () => {
 
 test("adds the admin button only for https URLs, and marks resends", () => {
   const base = {
-    code: "KM-7F3K2",
     date: "2026-09-20",
     time: "19:30",
     guests: 2,

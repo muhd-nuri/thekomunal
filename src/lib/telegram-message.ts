@@ -13,7 +13,8 @@ export function firstNameOf(name: string) {
 }
 
 export type TelegramBookingInput = {
-  code: string
+  /** The partner/link ref from `?ref=` (`reservations.ref_code`), if any. */
+  refCode?: string | null
   /** "2026-09-20", as stored in `reserved_date` */
   date: string
   /** "20:00", as stored in `reserved_time` */
@@ -47,15 +48,20 @@ export function dateWithWeekday(date: string) {
 
 /* The team's own layout, set 19 Sep 2026 — plain labelled lines they can read
    and copy at a glance. Occasion and Notes always print, with "-" when empty,
-   so every message has the same shape. The outlet, company and the
-   channel/landing-page lines were dropped from the message with it; they are
-   still on the booking in the admin ("Open in admin"). */
+   so every message has the same shape.
+
+   "Ref" is the `?ref=` code the guest arrived with (reservations.ref_code) —
+   NOT the KM-XXXXX booking code (corrected 19 Sep 2026: it briefly showed the
+   booking code). The team's layout has no line for the booking code; it still
+   reaches the guest in the WhatsApp button's prefilled text, and it, the
+   outlet, company and channel/landing-page lines are all on the booking behind
+   "Open in admin". Print "-" when there is no ref, same as Occasion and Notes. */
 export function buildBookingMessage(input: TelegramBookingInput) {
   const e = escapeHtml
   const lines = [
     `📍The Komunal Reservation${input.resent ? " (resent)" : ""}`,
     "",
-    `Ref: ${e(input.code)}`,
+    `Ref: ${input.refCode ? e(input.refCode) : "-"}`,
     "",
     `Name: ${e(input.name)}`,
     `Email: ${e(input.email)}`,
