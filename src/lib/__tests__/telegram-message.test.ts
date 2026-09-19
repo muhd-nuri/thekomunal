@@ -1,7 +1,11 @@
 import { expect, test } from "bun:test"
 
 import { generateBookingCode, BOOKING_CODE_RE } from "@/lib/booking-code"
-import { buildBookingMessage, escapeHtml } from "@/lib/telegram-message"
+import {
+  buildBookingMessage,
+  dateWithWeekday,
+  escapeHtml,
+} from "@/lib/telegram-message"
 
 test("escapes HTML in user input", () => {
   expect(escapeHtml(`<b>Tom & "Jerry"</b>`)).toBe(
@@ -9,35 +13,33 @@ test("escapes HTML in user input", () => {
   )
 })
 
-test("builds the booking message", () => {
+test("builds the booking message in the team's layout", () => {
   const { text, reply_markup } = buildBookingMessage({
     code: "KM-7F3K2",
-    outletName: "Komunal Bukit Rimau",
-    when: "Sun, 20 Sep 2026 · 7:30 PM",
+    date: "2026-09-20",
+    time: "19:30",
     guests: 6,
     eventLabel: "Birthday party",
     name: "Aina <Rahman>",
     phoneE164: "60123456789",
     email: "aina@email.com",
-    company: null,
     notes: "Window seat & cake <please>",
-    channel: "referral",
-    channelDetail: "newagency",
-    landingPath: "/?ref=newagency&x=<y>",
     whatsappUrl: "https://wa.me/60123456789?text=hi",
   })
   expect(text).toBe(
     [
-      "🆕 <b>New reservation · KM-7F3K2</b>",
-      "📍 Komunal Bukit Rimau",
-      "🗓 Sun, 20 Sep 2026 · 7:30 PM",
-      "👥 6 pax · 🎉 Birthday party",
-      "👤 Aina &lt;Rahman&gt; · 012-345 6789",
-      "✉️ aina@email.com",
-      "📝 Window seat &amp; cake &lt;please&gt;",
-      "──────────",
-      "📈 Referral · newagency",
-      "↳ landed on /?ref=newagency&amp;x=&lt;y&gt;",
+      "📍The Komunal Reservation",
+      "",
+      "Ref: KM-7F3K2",
+      "",
+      "Name: Aina &lt;Rahman&gt;",
+      "Email: aina@email.com",
+      "Phone: 012-345 6789",
+      "Date: 2026-09-20 (Sunday)",
+      "Time: 19:30",
+      "Pax: 6",
+      "Occasion: Birthday party",
+      "Notes: Window seat &amp; cake &lt;please&gt;",
     ].join("\n")
   )
   expect(reply_markup.inline_keyboard[0][0]).toEqual({
@@ -46,16 +48,37 @@ test("builds the booking message", () => {
   })
 })
 
-test("adds the admin button only for https URLs, and marks resends", () => {
-  const base = {
+test("prints a dash for a missing occasion or blank notes", () => {
+  const { text } = buildBookingMessage({
     code: "KM-7F3K2",
-    outletName: "Komunal Bukit Rimau",
-    when: "Sun, 20 Sep 2026 · 7:30 PM",
+    date: "2026-09-20",
+    time: "12:00",
     guests: 2,
     name: "Aina",
     phoneE164: "60123456789",
     email: "aina@email.com",
-    channel: "direct" as const,
+    notes: "   ",
+    whatsappUrl: "https://wa.me/60123456789",
+  })
+  expect(text).toContain("Occasion: -")
+  expect(text.endsWith("Notes: -")).toBe(true)
+})
+
+test("names the weekday from the calendar date, not the server clock", () => {
+  expect(dateWithWeekday("2026-09-20")).toBe("2026-09-20 (Sunday)")
+  expect(dateWithWeekday("2026-12-31")).toBe("2026-12-31 (Thursday)")
+  expect(dateWithWeekday("not-a-date")).toBe("not-a-date")
+})
+
+test("adds the admin button only for https URLs, and marks resends", () => {
+  const base = {
+    code: "KM-7F3K2",
+    date: "2026-09-20",
+    time: "19:30",
+    guests: 2,
+    name: "Aina",
+    phoneE164: "60123456789",
+    email: "aina@email.com",
     whatsappUrl: "https://wa.me/60123456789",
   }
   const withAdmin = buildBookingMessage({
@@ -68,7 +91,7 @@ test("adds the admin button only for https URLs, and marks resends", () => {
     url: "https://thekomunal.com/admin/reservations/abc",
   })
   expect(
-    withAdmin.text.startsWith("🔁 <b>Reservation (resent) · KM-7F3K2</b>")
+    withAdmin.text.startsWith("📍The Komunal Reservation (resent)\n")
   ).toBe(true)
   const local = buildBookingMessage({
     ...base,

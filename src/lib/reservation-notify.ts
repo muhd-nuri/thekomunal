@@ -7,8 +7,7 @@ import { db } from "@/db"
 import { reservations, type Reservation } from "@/db/schema"
 import { getOutlet, primaryOutlet } from "@/data/outlets"
 import { eventTypeLabel, staffWhatsAppMessage } from "@/data/reservation"
-import type { SourceChannel } from "@/lib/attribution"
-import { formatSlotLong, formatSlotShort } from "@/lib/booking-time"
+import { formatSlotShort } from "@/lib/booking-time"
 import { sendTelegramMessage } from "@/lib/telegram"
 import { buildBookingMessage, firstNameOf } from "@/lib/telegram-message"
 
@@ -32,18 +31,14 @@ export async function notifyReservation(
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? ""
   const message = buildBookingMessage({
     code: row.code,
-    outletName: outlet.shortName,
-    when: formatSlotLong(row.reservedAt),
+    date: row.reservedDate,
+    time: row.reservedTime,
     guests: row.guests,
     eventLabel: row.eventType ? eventTypeLabel(row.eventType) : undefined,
     name: row.name,
     phoneE164: row.phoneE164,
     email: row.email,
-    company: row.company,
     notes: row.notes,
-    channel: row.sourceChannel as SourceChannel,
-    channelDetail: row.sourceDetail,
-    landingPath: row.landingPath,
     whatsappUrl: whatsappUrlFor(row),
     adminUrl: site
       ? `${site.replace(/\/$/, "")}/admin/reservations/${row.id}`

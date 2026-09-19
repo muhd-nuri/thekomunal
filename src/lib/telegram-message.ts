@@ -1,5 +1,4 @@
 // Komunal: the booking-team Telegram message — HTML parse mode, so every user-supplied string is escaped.
-import { channelLabels, type SourceChannel } from "@/lib/attribution"
 import { formatMyMobile } from "@/lib/phone"
 
 export function escapeHtml(value: string) {
@@ -15,19 +14,16 @@ export function firstNameOf(name: string) {
 
 export type TelegramBookingInput = {
   code: string
-  outletName: string
-  /** "Sat, 20 Sep 2026 · 7:30 PM" */
-  when: string
+  /** "2026-09-20", as stored in `reserved_date` */
+  date: string
+  /** "20:00", as stored in `reserved_time` */
+  time: string
   guests: number
   eventLabel?: string
   name: string
   phoneE164: string
   email: string
-  company?: string | null
   notes?: string | null
-  channel: SourceChannel
-  channelDetail?: string | null
-  landingPath?: string | null
   /** Prefilled staff → guest wa.me link */
   whatsappUrl: string
   /** Admin detail page; only https URLs are allowed on Telegram buttons. */
@@ -36,23 +32,40 @@ export type TelegramBookingInput = {
   resent?: boolean
 }
 
+/** "2026-09-20" → "2026-09-20 (Sunday)". Read as a calendar date in UTC so
+ *  the weekday can never slip a day with the server's timezone. */
+export function dateWithWeekday(date: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return date
+  const day = new Date(`${date}T00:00:00Z`)
+  if (Number.isNaN(day.getTime())) return date
+  const weekday = day.toLocaleDateString("en-GB", {
+    weekday: "long",
+    timeZone: "UTC",
+  })
+  return `${date} (${weekday})`
+}
+
+/* The team's own layout, set 19 Sep 2026 — plain labelled lines they can read
+   and copy at a glance. Occasion and Notes always print, with "-" when empty,
+   so every message has the same shape. The outlet, company and the
+   channel/landing-page lines were dropped from the message with it; they are
+   still on the booking in the admin ("Open in admin"). */
 export function buildBookingMessage(input: TelegramBookingInput) {
   const e = escapeHtml
   const lines = [
-    `${input.resent ? "🔁" : "🆕"} <b>${input.resent ? "Reservation (resent)" : "New reservation"} · ${e(input.code)}</b>`,
-    `📍 ${e(input.outletName)}`,
-    `🗓 ${e(input.when)}`,
-    `👥 ${input.guests} pax${input.eventLabel ? ` · 🎉 ${e(input.eventLabel)}` : ""}`,
-    `👤 ${e(input.name)} · ${e(formatMyMobile(input.phoneE164))}`,
-    `✉️ ${e(input.email)}`,
+    `📍The Komunal Reservation${input.resent ? " (resent)" : ""}`,
+    "",
+    `Ref: ${e(input.code)}`,
+    "",
+    `Name: ${e(input.name)}`,
+    `Email: ${e(input.email)}`,
+    `Phone: ${e(formatMyMobile(input.phoneE164))}`,
+    `Date: ${e(dateWithWeekday(input.date))}`,
+    `Time: ${e(input.time)}`,
+    `Pax: ${input.guests}`,
+    `Occasion: ${input.eventLabel ? e(input.eventLabel) : "-"}`,
+    `Notes: ${input.notes?.trim() ? e(input.notes.trim()) : "-"}`,
   ]
-  if (input.company) lines.push(`🏢 ${e(input.company)}`)
-  if (input.notes) lines.push(`📝 ${e(input.notes)}`)
-  lines.push("──────────")
-  lines.push(
-    `📈 ${e(channelLabels[input.channel])}${input.channelDetail ? ` · ${e(input.channelDetail)}` : ""}`
-  )
-  if (input.landingPath) lines.push(`↳ landed on ${e(input.landingPath)}`)
 
   const buttonName = firstNameOf(input.name).slice(0, 24)
   const buttons = [
