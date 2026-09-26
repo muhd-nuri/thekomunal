@@ -23,13 +23,13 @@ export function GoogleAnalytics() {
       <Script id="gtag-init" strategy="afterInteractive">
         {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());${config}`}
       </Script>
-      {/* gtag.js (and the GT- container it pulls in, ~340 KB together) waits for the
-          page to finish loading and go idle, then drains the queue. It never
-          competes with the page's own JS; the cost is that a visit abandoned
-          before load is not counted. */}
+      {/* afterInteractive, not lazyOnload: GA only sees client navigations once
+          gtag.js is running (its history listener), so a late load would miss
+          early clicks. Measured on 26 Sep 2026, lazyOnload bought no Lighthouse
+          TBT/LCP gain — the script is async and never blocks rendering. */}
       <Script
         id="gtag-src"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GTAG_IDS[0])}`}
       />
     </>
