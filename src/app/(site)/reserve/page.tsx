@@ -8,15 +8,18 @@ import { Character } from "@/components/brand/character"
 import { WhatsAppIcon } from "@/components/brand/social-icons"
 import { Emphasis } from "@/components/emphasis"
 import { Section } from "@/components/section"
+import { pageMetadata } from "@/lib/seo"
 import { getOutlet, primaryOutlet } from "@/data/outlets"
 import { bookingRules, reservationCopy } from "@/data/reservation"
 import { site } from "@/data/site"
 import { firstBookableDate, klDateOffset, klToday } from "@/lib/booking-time"
 
-export const metadata: Metadata = {
+// Canonical drops ?outlet= and ?ref= so campaign links never split the page.
+export const metadata: Metadata = pageMetadata({
   title: "Reserve a table",
   description: reservationCopy.metaDescription,
-}
+  path: "/reserve",
+})
 
 export default async function ReservePage({
   searchParams,

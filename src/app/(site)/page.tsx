@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+
 import { Hero } from "@/components/home/hero"
 import { Tape } from "@/components/home/tape"
 import { Outlets } from "@/components/home/outlets"
@@ -7,6 +9,16 @@ import { Reviews } from "@/components/home/reviews"
 import { FinalCta } from "@/components/home/final-cta"
 import { getFeaturedEvent } from "@/lib/events"
 import { formatPrice, getSignatureDishes, lowestPrice } from "@/lib/menu"
+import { pageMetadata } from "@/lib/seo"
+import { cafeJsonLd } from "@/lib/structured-data"
+import { JsonLd } from "@/components/json-ld"
+import { primaryOutlet } from "@/data/outlets"
+import { site } from "@/data/site"
+
+export const metadata: Metadata = pageMetadata({
+  description: site.description,
+  path: "/",
+})
 
 export default async function HomePage() {
   // Only what the client component renders crosses the boundary.
@@ -27,6 +39,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={cafeJsonLd(primaryOutlet)} />
       <Hero />
       <Tape />
       <Outlets />

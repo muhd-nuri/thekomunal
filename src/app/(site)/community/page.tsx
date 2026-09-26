@@ -8,17 +8,18 @@ import { WhatsAppIcon } from "@/components/brand/social-icons"
 import { CTAButton } from "@/components/cta-button"
 import { PageHeader } from "@/components/page-header"
 import { Section } from "@/components/section"
+import { pageMetadata } from "@/lib/seo"
 import { eventTypes } from "@/data/reservation"
 import { getPublishedEvents } from "@/lib/events"
 import { primaryOutlet } from "@/data/outlets"
 import { communityPage, withMax } from "@/data/pages"
 import { hero, sections, site } from "@/data/site"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: communityPage.metaTitle,
   description: communityPage.metaDescription,
-  alternates: { canonical: "/community" },
-}
+  path: "/community",
+})
 
 export default async function CommunityPage() {
   const events = await getPublishedEvents()

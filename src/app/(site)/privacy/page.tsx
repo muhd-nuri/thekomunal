@@ -2,6 +2,7 @@
 import type { Metadata } from "next"
 
 import { Section } from "@/components/section"
+import { pageMetadata } from "@/lib/seo"
 import {
   privacyEn,
   privacyMeta,
@@ -11,11 +12,11 @@ import {
 } from "@/data/privacy"
 import { cn } from "@/lib/utils"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: privacyMeta.metaTitle,
   description: privacyMeta.metaDescription,
-  alternates: { canonical: "/privacy" },
-}
+  path: "/privacy",
+})
 
 const linkClass =
   "font-extrabold text-brand underline decoration-line underline-offset-4 hover:decoration-brand"

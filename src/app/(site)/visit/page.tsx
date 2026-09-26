@@ -9,15 +9,18 @@ import { InstagramIcon, WhatsAppIcon } from "@/components/brand/social-icons"
 import { CTAButton } from "@/components/cta-button"
 import { PageHeader } from "@/components/page-header"
 import { Section } from "@/components/section"
+import { pageMetadata } from "@/lib/seo"
+import { cafeJsonLd } from "@/lib/structured-data"
+import { JsonLd } from "@/components/json-ld"
 import { deliveryLinks, primaryOutlet } from "@/data/outlets"
 import { visitPage, withMax } from "@/data/pages"
 import { site } from "@/data/site"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: visitPage.metaTitle,
   description: visitPage.metaDescription,
-  alternates: { canonical: "/visit" },
-}
+  path: "/visit",
+})
 
 const linkClass =
   "inline-flex min-h-[44px] items-center gap-3 font-extrabold text-brand underline-offset-4 hover:underline"
@@ -32,6 +35,7 @@ export default function VisitPage() {
 
   return (
     <>
+      <JsonLd data={cafeJsonLd(outlet)} />
       <Section band="cream" className="pt-28 md:pt-36">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">

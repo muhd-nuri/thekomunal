@@ -7,6 +7,7 @@ import { CTAButton } from "@/components/cta-button"
 import { MenuCategorySection } from "@/components/menu/menu-category"
 import { PageHeader } from "@/components/page-header"
 import { Section } from "@/components/section"
+import { pageMetadata } from "@/lib/seo"
 import { FinalCta } from "@/components/home/final-cta"
 import { primaryOutlet } from "@/data/outlets"
 import { menuPage } from "@/data/pages"
@@ -19,11 +20,11 @@ import {
   menuNotes,
 } from "@/lib/menu"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: menuPage.metaTitle,
   description: menuPage.metaDescription,
-  alternates: { canonical: "/menu" },
-}
+  path: "/menu",
+})
 
 export default async function MenuPage() {
   const [categories, bestSellers, pdf] = await Promise.all([
