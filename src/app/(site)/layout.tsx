@@ -1,9 +1,10 @@
-// Komunal: public site chrome — smooth scroll, navbar, footer, WhatsApp float, Pixel and attribution.
+// Komunal: public site chrome — smooth scroll, navbar, footer, WhatsApp float, Pixel, GA and attribution.
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 import { MetaPixel } from "@/components/meta-pixel"
+import { GoogleAnalytics } from "@/components/google-analytics"
 import { AttributionCapture } from "@/components/attribution-capture"
 
 export default function SiteLayout({
@@ -18,6 +19,7 @@ export default function SiteLayout({
       </SmoothScroll>
       <WhatsAppFloat />
       <MetaPixel />
+      <GoogleAnalytics />
       <AttributionCapture />
     </>
   )
