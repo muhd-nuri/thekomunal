@@ -13,6 +13,8 @@ export function firstNameOf(name: string) {
 }
 
 export type TelegramBookingInput = {
+  /** The outlet's `telegramLabel`, e.g. "TheKomunal Bukit Rimau". */
+  outletLabel: string
   /** The partner/link ref from `?ref=` (`reservations.ref_code`), if any. */
   refCode?: string | null
   /** "2026-09-20", as stored in `reserved_date` */
@@ -50,6 +52,10 @@ export function dateWithWeekday(date: string) {
    and copy at a glance. Occasion and Notes always print, with "-" when empty,
    so every message has the same shape.
 
+   "Outlet" (added 26 Sep 2026) sits directly above Ref and comes from the
+   outlet's own `telegramLabel`, so a second branch (Bukit Jelutong, not yet
+   operational) names itself with no change here.
+
    "Ref" is the `?ref=` code the guest arrived with (reservations.ref_code) —
    NOT the KM-XXXXX booking code (corrected 19 Sep 2026: it briefly showed the
    booking code). The team's layout has no line for the booking code; it still
@@ -61,6 +67,7 @@ export function buildBookingMessage(input: TelegramBookingInput) {
   const lines = [
     `📍The Komunal Reservation${input.resent ? " (resent)" : ""}`,
     "",
+    `Outlet: ${e(input.outletLabel)}`,
     `Ref: ${input.refCode ? e(input.refCode) : "-"}`,
     "",
     `Name: ${e(input.name)}`,

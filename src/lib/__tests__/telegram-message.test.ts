@@ -15,6 +15,7 @@ test("escapes HTML in user input", () => {
 
 test("builds the booking message in the team's layout", () => {
   const { text, reply_markup } = buildBookingMessage({
+    outletLabel: "TheKomunal Bukit Rimau",
     refCode: "ig-bio",
     date: "2026-09-20",
     time: "19:30",
@@ -30,6 +31,7 @@ test("builds the booking message in the team's layout", () => {
     [
       "📍The Komunal Reservation",
       "",
+      "Outlet: TheKomunal Bukit Rimau",
       "Ref: ig-bio",
       "",
       "Name: Aina &lt;Rahman&gt;",
@@ -50,6 +52,7 @@ test("builds the booking message in the team's layout", () => {
 
 test("prints a dash for a missing ref, occasion or blank notes", () => {
   const { text } = buildBookingMessage({
+    outletLabel: "TheKomunal Bukit Rimau",
     date: "2026-09-20",
     time: "12:00",
     guests: 2,
@@ -73,6 +76,7 @@ test("names the weekday from the calendar date, not the server clock", () => {
 
 test("adds the admin button only for https URLs, and marks resends", () => {
   const base = {
+    outletLabel: "TheKomunal Bukit Rimau",
     date: "2026-09-20",
     time: "19:30",
     guests: 2,

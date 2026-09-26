@@ -30,6 +30,7 @@ export async function notifyReservation(
   const outlet = getOutlet(row.outletSlug) ?? primaryOutlet
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? ""
   const message = buildBookingMessage({
+    outletLabel: outlet.telegramLabel,
     refCode: row.refCode,
     date: row.reservedDate,
     time: row.reservedTime,

@@ -22,6 +22,9 @@ export type Outlet = {
   /** Short, factual line about the space (from the current reservation site). */
   spaceNote: string
   telegramThreadId?: number
+  /** How the booking-team Telegram message names this outlet ("Outlet: …").
+   *  The team's own wording — not `name` or `shortName`. */
+  telegramLabel: string
   delivery: { grab?: string; foodpanda?: string; shopeefood?: string }
   image: { src: string; alt: string; width: number; height: number }
   character: CharacterId
@@ -44,6 +47,7 @@ export const outlets: Outlet[] = [
     hours: "Open daily 8:30am – 10pm", // TODO: confirm with the client
     opening: { opens: "08:30", closes: "22:00" },
     acceptsReservations: true,
+    telegramLabel: "TheKomunal Bukit Rimau",
     maxGuestsOnline: 60,
     spaceNote:
       "Room for groups of up to 60, with a discussion space and whiteboard.",
