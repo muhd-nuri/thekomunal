@@ -1,12 +1,12 @@
 "use client"
 // Komunal: poster wall — real event artwork taped to the blue band, tilted like a noticeboard, never a card grid.
 import Image from "next/image"
-import { motion, useReducedMotion } from "framer-motion"
+import { LazyMotion, m, useReducedMotion } from "framer-motion"
 import { CTAButton } from "@/components/cta-button"
 import { Section } from "@/components/section"
 import type { CommunityEvent } from "@/data/events"
 import { sections } from "@/data/site"
-import { reveal } from "@/lib/motion"
+import { loadMotionFeatures, reveal } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -79,43 +79,45 @@ export function Community({
           </div>
         </div>
 
-        <motion.div
-          variants={reveal}
-          initial="hidden"
-          {...revealProps}
-          className="grid grid-cols-2 gap-x-5 gap-y-6 md:grid-cols-6 md:gap-x-2 md:gap-y-4 lg:col-span-7"
-        >
-          {featuredEvent.posters
-            .slice(0, posterPlacement.length)
-            .map((poster, i) => (
-              <div
-                key={poster.src}
-                className={cn("relative", posterPlacement[i])}
-                style={{ rotate: `${poster.tilt}deg` }}
-              >
-                {/* Aspect reserved on the wrapper, so nothing shifts while the poster loads. */}
-                <div className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-[0_18px_40px_-20px_rgba(0,0,0,0.45)]">
-                  <Image
-                    src={poster.src}
-                    alt={poster.alt}
-                    fill
-                    sizes="(min-width: 1024px) 220px, 45vw"
-                    className="object-cover"
+        <LazyMotion features={loadMotionFeatures}>
+          <m.div
+            variants={reveal}
+            initial="hidden"
+            {...revealProps}
+            className="grid grid-cols-2 gap-x-5 gap-y-6 md:grid-cols-6 md:gap-x-2 md:gap-y-4 lg:col-span-7"
+          >
+            {featuredEvent.posters
+              .slice(0, posterPlacement.length)
+              .map((poster, i) => (
+                <div
+                  key={poster.src}
+                  className={cn("relative", posterPlacement[i])}
+                  style={{ rotate: `${poster.tilt}deg` }}
+                >
+                  {/* Aspect reserved on the wrapper, so nothing shifts while the poster loads. */}
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-[0_18px_40px_-20px_rgba(0,0,0,0.45)]">
+                    <Image
+                      src={poster.src}
+                      alt={poster.alt}
+                      fill
+                      sizes="(min-width: 1024px) 220px, 45vw"
+                      className="object-cover"
+                    />
+                  </div>
+
+                  {/* Tape corners: cream at 70%, no new colour. Outside the clipped box, above the poster. */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-2 -left-3 z-10 h-5 w-14 -rotate-[40deg] bg-cream/70"
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-2 -right-3 z-10 h-5 w-14 rotate-[40deg] bg-cream/70"
                   />
                 </div>
-
-                {/* Tape corners: cream at 70%, no new colour. Outside the clipped box, above the poster. */}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -top-2 -left-3 z-10 h-5 w-14 -rotate-[40deg] bg-cream/70"
-                />
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -top-2 -right-3 z-10 h-5 w-14 rotate-[40deg] bg-cream/70"
-                />
-              </div>
-            ))}
-        </motion.div>
+              ))}
+          </m.div>
+        </LazyMotion>
       </div>
     </Section>
   )

@@ -1,9 +1,9 @@
 "use client"
 // Komunal: character hijack — a character must always overlap a real photo edge, never float on flat colour.
 import Image from "next/image"
-import { motion, useReducedMotion } from "framer-motion"
+import { LazyMotion, m, useReducedMotion } from "framer-motion"
 import { characters, type CharacterId } from "@/data/characters"
-import { easeOut } from "@/lib/motion"
+import { easeOut, loadMotionFeatures } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 export type CharacterAnchor =
@@ -124,22 +124,24 @@ export function Character({
       )}
       style={position}
     >
-      <motion.div {...motionProps}>
-        {/* Aspect reserved from the registry so the character never shifts layout. */}
-        <div
-          className="relative w-full"
-          style={{ aspectRatio: `${asset.width} / ${asset.height}` }}
-        >
-          <Image
-            src={src}
-            alt=""
-            fill
-            unoptimized
-            sizes="(min-width: 768px) 240px, 45vw"
-            className={cn("object-contain", flip && "-scale-x-100")}
-          />
-        </div>
-      </motion.div>
+      <LazyMotion features={loadMotionFeatures}>
+        <m.div {...motionProps}>
+          {/* Aspect reserved from the registry so the character never shifts layout. */}
+          <div
+            className="relative w-full"
+            style={{ aspectRatio: `${asset.width} / ${asset.height}` }}
+          >
+            <Image
+              src={src}
+              alt=""
+              fill
+              unoptimized
+              sizes="(min-width: 768px) 240px, 45vw"
+              className={cn("object-contain", flip && "-scale-x-100")}
+            />
+          </div>
+        </m.div>
+      </LazyMotion>
     </div>
   )
 }

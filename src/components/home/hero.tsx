@@ -1,17 +1,11 @@
-"use client"
 // Komunal: character hijack — the shout sits on blue, the photo is a blob block, and a barista climbs out over its edge.
-import { motion, useReducedMotion } from "framer-motion"
 import { BlobMask } from "@/components/brand/blob-mask"
 import { Character } from "@/components/brand/character"
 import { CTAButton } from "@/components/cta-button"
 import { Section } from "@/components/section"
 import { hero } from "@/data/site"
-import { reveal } from "@/lib/motion"
 
 export function Hero() {
-  // The hero is the LCP block: the heading reveals on mount, never on scroll.
-  const reduced = useReducedMotion()
-
   return (
     <Section
       band="brand"
@@ -25,17 +19,12 @@ export function Hero() {
             {hero.eyebrow}
           </p>
 
-          <motion.h1
-            variants={reveal}
-            initial="hidden"
-            animate="visible"
-            // Reduced motion collapses the duration rather than skipping `initial`,
-            // so the server and client render the same markup (no hydration mismatch).
-            transition={reduced ? { duration: 0 } : undefined}
-            className="mt-4 text-[clamp(3rem,11vw,9rem)] leading-[0.9] tracking-[-0.02em] uppercase"
-          >
+          {/* The hero is the LCP block: the heading reveals on mount with a CSS
+              animation (same 20px / 0.55s / ease-out-quint as `reveal`), so it
+              is visible before — and without — JavaScript. */}
+          <h1 className="mt-4 animate-in text-[clamp(3rem,11vw,9rem)] leading-[0.9] tracking-[-0.02em] uppercase duration-550 ease-out-quint slide-in-from-bottom-5 fade-in motion-reduce:animate-none">
             {hero.shout}
-          </motion.h1>
+          </h1>
 
           <p className="mt-6 max-w-[38ch] text-lg md:text-xl">{hero.support}</p>
 

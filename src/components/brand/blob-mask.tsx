@@ -2,7 +2,8 @@
 // Komunal: blob block — the cup shape masks a real photo, and characters break out over its edge.
 import Image from "next/image"
 import { useId, useRef } from "react"
-import { motion, useInView, useReducedMotion } from "framer-motion"
+import { LazyMotion, m, useInView, useReducedMotion } from "framer-motion"
+import { loadMotionFeatures } from "@/lib/motion"
 import { blobMorphPaths, blobPaths, type BlobVariant } from "./blob-paths"
 import { cn } from "@/lib/utils"
 
@@ -76,17 +77,19 @@ export function BlobMask({
             transform={`translate(0.5 0.5) scale(${BLOB_INSET}) rotate(${rotate}) translate(-0.5 -0.5)`}
           >
             {shouldMorph ? (
-              <motion.path
-                d={blobMorphPaths[0]}
-                initial={{ d: blobMorphPaths[0] }}
-                animate={{ d: blobMorphPaths[1] }}
-                transition={{
-                  duration: 12,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  ease: "easeInOut",
-                }}
-              />
+              <LazyMotion features={loadMotionFeatures}>
+                <m.path
+                  d={blobMorphPaths[0]}
+                  initial={{ d: blobMorphPaths[0] }}
+                  animate={{ d: blobMorphPaths[1] }}
+                  transition={{
+                    duration: 12,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    ease: "easeInOut",
+                  }}
+                />
+              </LazyMotion>
             ) : (
               <path d={staticPath} />
             )}

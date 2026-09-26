@@ -23,5 +23,9 @@ export const peek: Variants = {
   },
 }
 
+/** For <LazyMotion features={loadMotionFeatures}>: `m.*` elements animate once this resolves. */
+export const loadMotionFeatures = () =>
+  import("./motion-features").then((mod) => mod.default)
+
 /** Shared viewport settings for "once" reveals. */
 export const viewportOnce = { once: true, amount: 0.3 } as const
