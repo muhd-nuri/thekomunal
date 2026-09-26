@@ -133,17 +133,20 @@ async function seedMenuPdf() {
     return
   }
   const pdf = menuPdfs[0]
-  if (!pdf) return
+  if (!pdf) {
+    console.log("menu pdf: none in the seed, upload it in /admin/menu")
+    return
+  }
   const value: schema.MenuPdfSetting = {
     src: pdf.href,
     label: pdf.label,
-    filename: "The-Komunal-Menu-2.pdf",
+    filename: pdf.href.slice(pdf.href.lastIndexOf("/") + 1),
     bytes: 0,
   }
   await db
     .insert(schema.siteSettings)
     .values({ key: "menu_pdf", value, updatedBy: SEED_BY })
-  console.log("menu pdf: linked to the current WordPress file")
+  console.log(`menu pdf: linked to ${pdf.href}`)
 }
 
 async function seedEvents_() {

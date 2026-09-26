@@ -888,11 +888,10 @@ export const signatureDishSlugs = [
   "french-toast",
 ] as const
 
-export const menuPdfs: MenuPdf[] = [
-  {
-    outletSlug: "bukit-rimau",
-    label: "Full menu (PDF)",
-    // TODO(phase 5): self-host a compressed copy; the original is 33 MB.
-    href: "https://thekomunal.com/wp-content/uploads/2025/05/The-Komunal-Menu-2.pdf",
-  },
-]
+/**
+ * Deliberately empty. The menu PDF used to live on the old WordPress site
+ * (thekomunal.com/wp-content/…), which this app replaced on 26 Sep 2026, so
+ * that URL is dead. Upload the PDF in /admin/menu → "Menu PDF" instead; until
+ * then /menu simply hides the download link.
+ */
+export const menuPdfs: MenuPdf[] = []

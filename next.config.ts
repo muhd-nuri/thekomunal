@@ -13,12 +13,18 @@ const nextConfig: NextConfig = {
   // app took over the domain on 26 Sep 2026. These catch its URLs that people,
   // old posts and Google still hold, so they land somewhere useful instead of a
   // 404. /menu already exists here; a trailing slash is normalised by Next.
-  // NOTE: /booking, /ramadan-ig and /ramadan-dcm are NOT here — Cloudflare Page
-  // Rules on the zone forward those to ramadan.thekomunal.com before the request
-  // ever reaches this app.
+  // /booking, /ramadan-ig and /ramadan-dcm used to be Cloudflare Page Rules
+  // forwarding to the (now deleted) ramadan subdomain. While those rules exist
+  // they win at the edge; once removed, these take over.
   async redirects() {
     return [
       { source: "/reservation", destination: "/reserve", permanent: true },
+      { source: "/booking", destination: "/reserve", permanent: true },
+      // Campaign links from Ramadan posts: keep attributing them through ?ref=
+      // (sanitised to [a-z0-9_-] by src/lib/attribution.ts). Temporary, so the
+      // mapping can change without browsers holding on to a cached 308.
+      { source: "/ramadan-ig", destination: "/reserve?ref=instagram", permanent: false },
+      { source: "/ramadan-dcm", destination: "/reserve?ref=dcm", permanent: false },
       { source: "/thank-you-reservation", destination: "/reserve", permanent: true },
       { source: "/about-us", destination: "/", permanent: true },
       // Past Morehcoustic events and their ticket pages → the events page.
