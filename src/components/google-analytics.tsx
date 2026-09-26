@@ -18,14 +18,20 @@ export function GoogleAnalytics() {
 
   return (
     <>
-      <Script
-        id="gtag-src"
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GTAG_IDS[0])}`}
-      />
+      {/* The queue exists right after hydration, so config, the page view and a
+          booking's generate_lead are captured immediately. */}
       <Script id="gtag-init" strategy="afterInteractive">
         {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());${config}`}
       </Script>
+      {/* gtag.js (and the GT- container it pulls in, ~340 KB together) waits for the
+          page to finish loading and go idle, then drains the queue. It never
+          competes with the page's own JS; the cost is that a visit abandoned
+          before load is not counted. */}
+      <Script
+        id="gtag-src"
+        strategy="lazyOnload"
+        src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GTAG_IDS[0])}`}
+      />
     </>
   )
 }
