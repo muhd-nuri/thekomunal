@@ -1,7 +1,9 @@
 // Komunal: serves CMS uploads. nginx may serve /media/ straight off disk too, but
 // next/image fetches local paths from this Node server, so the route must exist.
-import { readFile, stat } from "node:fs/promises"
+import { createReadStream } from "node:fs"
+import { stat } from "node:fs/promises"
 import { join } from "node:path"
+import { Readable } from "node:stream"
 
 import { MEDIA_FILENAME, UPLOAD_DIR } from "@/lib/uploads"
 
@@ -25,9 +27,13 @@ export async function GET(
   try {
     const info = await stat(path)
     if (!info.isFile()) return notFound()
-    const body = await readFile(path)
+    // Streamed, not buffered: the menu PDF is ~33 MB and would otherwise sit
+    // in memory once per concurrent download.
+    const body = Readable.toWeb(
+      createReadStream(path)
+    ) as unknown as ReadableStream<Uint8Array>
     const extension = file.slice(file.lastIndexOf(".") + 1)
-    return new Response(new Uint8Array(body), {
+    return new Response(body, {
       headers: {
         "Content-Type": TYPES[extension] ?? "application/octet-stream",
         "Content-Length": String(info.size),
