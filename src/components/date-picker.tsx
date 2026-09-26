@@ -31,6 +31,7 @@ export function DatePicker({
   isUnavailable,
   placeholder,
   className,
+  "aria-required": ariaRequired,
   ...aria
 }: {
   id: string
@@ -47,6 +48,7 @@ export function DatePicker({
   className?: string
   "aria-invalid"?: boolean
   "aria-describedby"?: string
+  /** Not valid ARIA on a button, so it is announced as part of the name instead. */
   "aria-required"?: boolean | "true"
 }) {
   const [open, setOpen] = useState(false)
@@ -72,6 +74,7 @@ export function DatePicker({
           <span className={cn("truncate", !selected && "text-ink-muted")}>
             {selected ? format(selected, "EEE, d MMM yyyy") : placeholder}
           </span>
+          {ariaRequired ? <span className="sr-only">, required</span> : null}
         </span>
         <ChevronDown
           className={cn(
