@@ -4,6 +4,7 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { ImageResponse } from "next/og"
+import sharp from "sharp"
 
 import { logotypePaths } from "@/components/brand/logo-paths"
 import { hero } from "@/data/site"
@@ -11,7 +12,7 @@ import { hero } from "@/data/site"
 // Keep in sync with OG_IMAGE in src/lib/seo.ts, which pages reference directly.
 export const alt = hero.image.alt
 export const size = { width: 1200, height: 630 }
-export const contentType = "image/png"
+export const contentType = "image/jpeg"
 
 const BRAND = "#24247b"
 
@@ -28,7 +29,7 @@ export default async function OpengraphImage() {
   const [, , vbW, vbH] = logotypePaths.viewBox.split(" ").map(Number)
   const logoWidth = 560
 
-  return new ImageResponse(
+  const png = new ImageResponse(
     <div
       style={{
         width: "100%",
@@ -79,4 +80,12 @@ export default async function OpengraphImage() {
     </div>,
     size
   )
+  // ImageResponse only emits PNG (~530 KB for a photo card). JPEG keeps it near
+  // 60 KB — link previews in WhatsApp and friends skip heavy images.
+  const jpeg = await sharp(Buffer.from(await png.arrayBuffer()))
+    .jpeg({ quality: 80, mozjpeg: true })
+    .toBuffer()
+  return new Response(new Uint8Array(jpeg), {
+    headers: { "Content-Type": contentType },
+  })
 }
