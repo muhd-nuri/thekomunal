@@ -1,12 +1,12 @@
 "use client"
 // Komunal: poster wall — real event artwork taped to the blue band, tilted like a noticeboard, never a card grid.
 import Image from "next/image"
-import { LazyMotion, m, useReducedMotion } from "framer-motion"
+import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion"
 import { CTAButton } from "@/components/cta-button"
 import { Section } from "@/components/section"
 import type { CommunityEvent } from "@/data/events"
 import { sections } from "@/data/site"
-import { loadMotionFeatures, reveal } from "@/lib/motion"
+import { reveal } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -79,7 +79,7 @@ export function Community({
           </div>
         </div>
 
-        <LazyMotion features={loadMotionFeatures}>
+        <LazyMotion features={domAnimation}>
           <m.div
             variants={reveal}
             initial="hidden"

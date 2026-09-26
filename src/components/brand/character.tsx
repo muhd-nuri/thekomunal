@@ -1,9 +1,9 @@
 "use client"
 // Komunal: character hijack — a character must always overlap a real photo edge, never float on flat colour.
 import Image from "next/image"
-import { LazyMotion, m, useReducedMotion } from "framer-motion"
+import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion"
 import { characters, type CharacterId } from "@/data/characters"
-import { easeOut, loadMotionFeatures } from "@/lib/motion"
+import { easeOut } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 export type CharacterAnchor =
@@ -124,7 +124,7 @@ export function Character({
       )}
       style={position}
     >
-      <LazyMotion features={loadMotionFeatures}>
+      <LazyMotion features={domAnimation}>
         <m.div {...motionProps}>
           {/* Aspect reserved from the registry so the character never shifts layout. */}
           <div
