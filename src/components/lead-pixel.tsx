@@ -70,8 +70,7 @@ export function LeadPixel({ code }: { code: string }) {
     const stopGa = fireOnce(
       `km_ga_lead_${code}`,
       () => Boolean(window.gtag),
-      () =>
-        trackGtag("generate_lead", { lead_source: "table_reservation" })
+      () => trackGtag("generate_lead", { lead_source: "table_reservation" })
     )
     return () => {
       stopMeta()

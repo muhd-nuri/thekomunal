@@ -12,7 +12,9 @@ export function GoogleAnalytics() {
   // enhanced measurement ("page changes based on browser history events"), which
   // listens to the App Router's history.pushState — so no manual page_view here,
   // which would count every navigation twice.
-  const config = GTAG_IDS.map((id) => `gtag('config',${JSON.stringify(id)});`).join("")
+  const config = GTAG_IDS.map(
+    (id) => `gtag('config',${JSON.stringify(id)});`
+  ).join("")
 
   return (
     <>
