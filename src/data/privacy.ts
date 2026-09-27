@@ -75,7 +75,7 @@ const contactItemsMs = [
   { ...contactItems[1], label: "WhatsApp" },
 ]
 
-/** "60164375378" → "016-437 5378" for display. */
+/** "601126685945" → "011-2668 5945" for display. */
 function waDisplay(number: string) {
   const local = number.startsWith("60") ? `0${number.slice(2)}` : number
   if (local.length === 10)

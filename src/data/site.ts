@@ -9,10 +9,11 @@ export const site = {
     "A community specialty café in Bukit Rimau, Shah Alam, serving specialty coffee and a full kitchen — nasi lemak, pasta, lamb grill, breakfast — plus events worth coming back for.",
   entity: "THE KOMUNAL SDN. BHD. (1455687-W)",
   city: "Shah Alam",
-  /** Current site lists 011-2668 5945 for enquiries — TODO: confirm canonical number. */
+  /** The one Komunal number, for calls and WhatsApp alike — confirmed 27 Sep 2026. */
   phone: { display: "011-2668 5945", href: "tel:+601126685945" },
-  /** Footer WhatsApp on the current site is 016-437 5378 — TODO: confirm canonical number. */
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "60164375378",
+  /** Same number as `phone` (confirmed 27 Sep 2026; was 016-437 5378). The env var
+   *  wins in production and is baked in at build time. */
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "601126685945",
   whatsappGreeting: "Hi Komunal! I have a question about…",
   socials: {
     instagram: {
